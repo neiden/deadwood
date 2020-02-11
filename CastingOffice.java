@@ -1,5 +1,3 @@
-package Assignment2Milestone1;
-
 public class CastingOffice extends Scene{
 
     private int[]  upgradeCosts;

@@ -1,5 +1,3 @@
-package Assignment2Milestone1;
-
 import java.util.ArrayList;
 
 public class Scene {

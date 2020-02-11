@@ -1,5 +1,3 @@
-package Assignment2Milestone1;
-
 public class Role {
     private int level;
     private String phrase;
