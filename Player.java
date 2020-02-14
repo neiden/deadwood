@@ -7,7 +7,6 @@ public class Player {
     public int credits;
     public int rank;
     public Role role;
-    private Player nextPlayer;
     private boolean turn;
 
     public Player(){

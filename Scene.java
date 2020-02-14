@@ -6,7 +6,7 @@ public class Scene {
     private int shotsRemaining;
     public String name;
     private String availableRoles;
-    private int[] Roles;
+    private ArrayList<Role> roleList;
     private ArrayList<Scene> neighboringScenes;
 
     public void reset(){
