@@ -2,13 +2,11 @@ public class Role {
     private int level;
     private String phrase;
     private String name;
-    private Scene scene;
 
-    public Role(int level, String phrase, String name, Scene scene){
+    public Role(int level, String phrase, String name){
         this.level = level;
         this.phrase = phrase;
         this.name = name;
-        this.scene = scene;
     }
 
 
@@ -34,5 +32,9 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String toString(){
+        return name + ", " + phrase + ", " + level;
     }
 }
