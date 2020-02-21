@@ -21,10 +21,19 @@ public class Role {
         return phrase;
     }
 
+    public void setActor(Player actor){
+
+        this.actor = actor;
+    }
+
 
     public void setPhrase(String phrase) {
         this.phrase = phrase;
 
+    }
+
+    public String getType(){
+        return type;
     }
 
     public int getLevel() {
@@ -44,6 +53,6 @@ public class Role {
     }
 
     public String toString(){
-        return name + ", " + phrase + ", " + level;
+        return "Name: " + name + ", Phrase: " + phrase + ", Required Rank: " + level + " Type: " + type;
     }
 }

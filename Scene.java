@@ -38,12 +38,21 @@ public class Scene {
         return roleList;
     }
 
+
+    public void setRoleActor(String name, Player player){
+        for (int i = 0; i < roleList.size(); i++) {
+            if(roleList.get(i).getName().equals(name)){
+                roleList.get(i).setActor(player);
+            }
+        }
+    }
+
     public int getBudget(){
         return budget;
     }
 
     @Override
     public String toString() {
-        return name + "\n" + "description: " + description + "\n available roles: " + roleList + "\n budget " + budget + "\nscene num: " + sceneNum;
+        return name + "\n" + "description: " + description + "\nAll main roles: " + roleList + "\nBudget: " + budget + "\nscene num: " + sceneNum;
     }
 }

@@ -182,7 +182,7 @@ public class ParseXML {
 
 
 
-        Sets.add(new Set(0, "Trailer", null, neighbors));
+        Sets.add(new Set(0, "trailer", null, neighbors));
 
         NodeList officeList = root.getElementsByTagName("office");
         Node office = officeList.item(0);
@@ -220,7 +220,7 @@ public class ParseXML {
             }
         }
 
-        Sets.add(new CastingOffice(0, "Casting Office", null, neighbors2, upgrades));
+        Sets.add(new CastingOffice(0, "office", null, neighbors2, upgrades));
 
         return Sets;
     }//class
