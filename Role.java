@@ -2,20 +2,29 @@ public class Role {
     private int level;
     private String phrase;
     private String name;
+    private String type;
+    private Player actor;
 
-    public Role(int level, String phrase, String name){
+    public Role(int level, String phrase, String name, String type){
         this.level = level;
         this.phrase = phrase;
         this.name = name;
+        this.type = type;
+        actor = null;
     }
 
+    public Player getActor(){
+        return actor;
+    }
 
     public String getPhrase() {
         return phrase;
     }
 
+
     public void setPhrase(String phrase) {
         this.phrase = phrase;
+
     }
 
     public int getLevel() {
