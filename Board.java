@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 public class Board {
 
@@ -13,6 +14,7 @@ public class Board {
 
     public void setScenes(ArrayList<Scene> scenes){
         Random rand = new Random();
+
         for (int i = 0; i < sets.size() - 2; i++) {
             int randIdx = rand.nextInt(scenes.size());
             sets.get(i).addScene(scenes.get(randIdx));

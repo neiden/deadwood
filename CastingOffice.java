@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class CastingOffice extends Set{
+public class CastingOffice extends Set {
 
 
     public Bank bank;
@@ -20,4 +20,6 @@ public class CastingOffice extends Set{
     public void upgradePlayer(Player player, String rank){
         player.rank = Integer.parseInt(rank);
     }
+
+
 }

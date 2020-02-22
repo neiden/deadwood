@@ -14,6 +14,7 @@ public class Player {
     public Role role;
     public Set currSet;
     public Scene currScene;
+    public int points;
     private boolean hasMoved;
     private boolean hasUpgraded;
     private boolean isTurn;
@@ -38,6 +39,7 @@ public class Player {
         scanner = new Scanner(System.in);
         hasMoved = false;
         hasUpgraded = false;
+        points = 0;
     }
 
 
@@ -216,7 +218,7 @@ public class Player {
 
     private void act(){
         Random rand = new Random();
-        int roll = rand.nextInt(7) + 1;
+        int roll = rand.nextInt(6) + 1;
         System.out.println(name + " rolled a " + roll + ", + " + practiceChips + " is " + (roll + practiceChips) + "!");
 
         if(roll + practiceChips >= currSet.getCurrScene().getBudget()){
@@ -228,7 +230,7 @@ public class Player {
                 credits += 2;
             }
             currSet.decrementShot();
-            System.out.println("It's higher than " + currSet.getCurrScene().getBudget() + "! " + currSet.getShotsRemaining() + " shots remain.");
+            System.out.println("It's greater or equal to " + currSet.getCurrScene().getBudget() + "! " + currSet.getShotsRemaining() + " shots remain.");
             if(currSet.getShotsRemaining() < 1) {
                 System.out.println(name + " completed the scene!");
             }
@@ -244,7 +246,65 @@ public class Player {
     }
 
     private void upgrade(){
-        ArrayList<String> upgradeOptions = new ArrayList<>();
+        ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
+        boolean correctInput = false;
+        for (int i = 0; i < currSet.getUpgrades().size(); i++) {
+            if(currSet.getUpgrades().get(i).level > rank){
+                if(currSet.getUpgrades().get(i).credits <= credits || currSet.getUpgrades().get(i).dollars <= dollars){
+                    upgradeOptions.add(currSet.getUpgrades().get(i));
+                }
+            }
+        }
+        if(upgradeOptions.size() > 0) {
+            while (!correctInput) {
+                System.out.println(upgradeOptions);
+                System.out.println("Enter corresponding number for rank: ");
+                int input = scanner.nextInt();
+                Upgrade upgrade = null;
+                for (int i = 0; i < upgradeOptions.size(); i++) {
+                    if (upgradeOptions.get(i).level == input) {
+                        correctInput = true;
+                        upgrade = upgradeOptions.get(i);
+                    }
+                }
+                if(correctInput){
+                    rank = input;
+                    if(dollars >= upgrade.dollars && credits >= upgrade.credits){
+                        System.out.println("Which currency do you want to use? [dollars], [credits]");
+                        boolean correctCurrency = false;
+                        while(!correctCurrency){
+                            String currency = scanner.next();
+                            if(currency.equals("dollars") || currency.equals("credits")) {
+                                correctCurrency = true;
+                                if (currency.equals("dollars")) {
+                                    dollars -= upgrade.dollars;
+                                }
+                                else if (currency.equals("credits")) {
+                                    credits -= upgrade.credits;
+                                }
+                            }
+                            else{
+                                System.out.println("Enter a valid option!");
+                            }
+                        }
+                    }
+                    else if(dollars >= upgrade.dollars){
+                        dollars -= upgrade.dollars;
+                    }
+                    else{
+                        credits -= upgrade.credits;
+                    }
+                    System.out.println(name + " is now rank " + rank + "!");
+                    scanner.nextLine();
+                }
+                else{
+                    System.out.println("Invalid upgrade level.");
+                }
+            }
+        }
+        else {
+            System.out.println("There are no available upgrades for you right now!");
+        }
     }
 
     private void rehearse(){

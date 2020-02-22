@@ -17,4 +17,8 @@ public class Upgrade {
         this.credits = credits;
     }
 
+    public String toString(){
+        return "Upgrade " + level + " costs: $" + dollars + " or " + credits + " credits. | ";
+    }
+
 }

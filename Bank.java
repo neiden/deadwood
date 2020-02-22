@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Random;
 
 public class Bank {
 
@@ -18,19 +20,38 @@ public class Bank {
         return 0;
     }
 
-    public void bonusMoneyDistribution(ArrayList<Player> playerList, String set){
+    class SortbyRoll implements Comparator<Player> {
+
+        public int compare(Player a, Player b){
+            return b.points - a.points;
+        }
+    }
+
+
+    public void bonusMoneyDistribution(ArrayList<Player> playerList, Set set){
         boolean main = false;
+        Random rand = new Random();
+        Scene scene = set.getCurrScene();
         String name = "";
+        int[] rolls = new int[scene.getBudget()];
         for (int i = 0; i < playerList.size(); i++) {
             Player currPlayer = playerList.get(i);
             if(currPlayer.role != null) {
-                if (currPlayer.currSet.name.equals(set) && currPlayer.role.getType().equals("main")) {
+                if (currPlayer.currSet.equals(set) && currPlayer.role.getType().equals("main")) {
                     name = currPlayer.name;
                     main = true;
                 }
             }
         }
         if(main){
+            for (int i = 0; i < scene.getBudget(); i++) {
+                rolls[i] = rand.nextInt(6) + 1;
+                System.out.println("A " + rolls[i] + " was rolled!");
+            }
+            for (int i = 0; i < playerList.size(); i++) {
+
+            }
+
             System.out.println(name + " was working a main role on completion of scene, awarding bonus money!!");
             System.out.println("I will later implement this!!!");
         }

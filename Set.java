@@ -5,6 +5,7 @@ public class Set {
     private int shotsRemaining;
     public String name;
     private ArrayList<Role> extras;
+    private ArrayList<Upgrade> upgrades;
     private ArrayList<String> setNeighbors;
 
     public Set(int shotsRemaining, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors){
@@ -13,6 +14,7 @@ public class Set {
         this.extras = extras;
         this.setNeighbors = setNeighbors;
         currScene = null;
+        upgrades = null;
     }
 
     public String getName(){
@@ -46,6 +48,13 @@ public class Set {
                 extras.get(i).setActor(player);
             }
         }
+    }
+
+    public  void upgradePlayer(Player player, String string){
+    }
+
+    public  ArrayList<Upgrade> getUpgrades(){
+        return null;
     }
 
 

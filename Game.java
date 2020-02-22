@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Game {
@@ -21,7 +23,7 @@ public class Game {
         running = true;
         this.scenes = scenes;
         dayDeadline = 0;
-        dayNumber = 1;
+        dayNumber = 0;
         devOptions = new ArrayList<>();
         bank = new Bank();
     }
@@ -30,6 +32,12 @@ public class Game {
 
         devOptions.add("locations");
         devOptions.add("playerInfo");
+        devOptions.add("setLocation");
+        devOptions.add("setRank");
+        devOptions.add("setCurrency");
+        devOptions.add("setRemainingScenes");
+        devOptions.add("setDay");
+        devOptions.add("infoSet");
 
         boolean running = true;
         System.out.println("Welcome to Deadwood!");
@@ -64,7 +72,9 @@ public class Game {
 
     public void run(){
         boolean notDevSelected = true;
-        if(dayNumber > dayDeadline){
+        if(dayNumber < 1){
+            calcScore();
+            System.out.println("Game over!");
             running = false;
         }else {
 
@@ -87,7 +97,7 @@ public class Game {
             if(notDevSelected) {
                 if(currPlayer.currSet.getCurrScene() != null){
                     if(currPlayer.currSet.getShotsRemaining() < 1){//If scene completed, clean up variables
-                        bank.bonusMoneyDistribution(playerList, currPlayer.currSet.name);
+                        bank.bonusMoneyDistribution(playerList, currPlayer.currSet);
                         killScene(currPlayer.currSet.getCurrScene());
                         currPlayer.currSet.setCurrScene(null);
                     }
@@ -103,9 +113,11 @@ public class Game {
                 currPlayer.setMoved(false);
                 currPlayer.setUpgraded(false);
 
-                if (board.scenesRemaining() < 1) {
-                    dayNumber--;
-                    board.setScenes(scenes);
+                if (board.scenesRemaining() < 2) {
+                    endDay();
+                    if(dayNumber > 0){
+                        startDay();
+                    }
                 }
             }
 
@@ -113,10 +125,30 @@ public class Game {
 
     }
 
+    class SortbyRoll implements Comparator<Player> {
+
+        public int compare(Player a, Player b){
+            return b.points - a.points;
+        }
+    }
+
+    private void calcScore(){
+        for (int i = 0; i < playerList.size(); i++) {
+            playerList.get(i).points = playerList.get(i).credits + playerList.get(i).dollars + (5 * playerList.get(i).rank);
+        }
+        Collections.sort(playerList, new SortbyRoll());
+        System.out.println("Final Scores:");
+        for (int i = 0; i < playerList.size(); i++) {
+            System.out.println("\t"+(i + 1) + ".] " + playerList.get(i).name + ", " + playerList.get(i).points + " pts.");
+        }
+    }
+
     private void killScene(Scene scene){
         for (int i = 0; i < playerList.size(); i++) {
             if(playerList.get(i).currSet.getCurrScene() != null) {
                 if (playerList.get(i).currSet.getCurrScene().name.equals(scene.name)) {
+                    playerList.get(i).currSet.setRoleActor(playerList.get(i).role.getName(), null);
+                    board.getSet(playerList.get(i).currSet.name).setCurrScene(null);
                     playerList.get(i).role = null;
                 }
             }
@@ -131,6 +163,47 @@ public class Game {
             }
             System.out.println();
         }
+    }
+
+    private void setLocation(){
+        System.out.println("Where would you like to move: ");
+        String input = scanner.next();
+        currPlayer.currSet = board.getSet(input);
+        System.out.println(currPlayer.name + " teleported to " + input);
+    }
+
+    private void setRank(){
+        System.out.println("What value of rank would you like: ");
+        int input = scanner.nextInt();
+        currPlayer.rank = input;
+        System.out.println(currPlayer.name + "'s rank set to " + input);
+    }
+    
+    private void setRemainingScenes(){
+        System.out.println("How many scenes would you like remaining?");
+        int input = scanner.nextInt();
+        for (int i = 0; i < board.sets.size() - (2 +input); i++) {
+            if(board.sets.get(i).hasScene()){
+                board.sets.get(i).setCurrScene(null);
+            }
+        }
+        for (int i = 0; i < board.sets.size(); i++) {
+            if(board.sets.get(i).hasScene()){
+                System.out.println(board.sets.get(i).name + " still has a scene.");
+            }
+        }
+        System.out.println(input + " scenes remaining.");
+    }
+    
+
+    private void setCurrency(){
+        System.out.println("Enter desired dollars: ");
+        int dollars = scanner.nextInt();
+        System.out.println("Enter desired credits: ");
+        int credits = scanner.nextInt();
+        currPlayer.credits = credits;
+        currPlayer.dollars = dollars;
+        System.out.println("Set " + currPlayer.name + "'s credits to " + credits + " and dollars to " + dollars);
     }
 
     private void playerInfo(){
@@ -151,6 +224,18 @@ public class Game {
 
     }
 
+    private void setDay(){
+        System.out.println("Enter day: ");
+        int input = scanner.nextInt();
+        dayNumber = input;
+        System.out.println("Day set to " + dayNumber);
+    }
+
+    private void infoSet(){
+        System.out.println(currPlayer.currSet);
+    }
+
+
     private boolean devOptions(String input){
         switch(input){
             case "locations":
@@ -159,17 +244,43 @@ public class Game {
             case "playerInfo":
                 playerInfo();
                 return true;
+            case "setCurrency":
+                setCurrency();
+                return true;
+            case "setRank":
+                setRank();
+                return true;
+            case "infoSet":
+                infoSet();
+                return true;
+            case "setDay":
+                setDay();
+                return true;
+            case "setRemainingScenes":
+                setRemainingScenes();
+                return true;
+            case "setLocation":
+                setLocation();
+                return true;
             default:
                 return false;
         }
     }
 
     private void startDay(){
+        board.setScenes(scenes);
 
     }
 
     private void endDay(){
-
+        System.out.println("Day " + dayNumber + " has now been completed! ");
+        dayNumber--;
+        System.out.println(dayNumber + " days remain.");
+        for (int i = 0; i < playerList.size(); i++) {
+            playerList.get(i).currSet = board.getSet("trailer");
+            playerList.get(i).role = null;
+            playerList.get(i).practiceChips = 0;
+        }
     }
 
     private void setCurrPlayer(Player player){
@@ -180,26 +291,26 @@ public class Game {
         switch(numPlayers){
             case 2:
             case 3:
-                dayDeadline = 3;
+                dayNumber = 3;
                 break;
             case 4:
-                dayDeadline = 4;
+                dayNumber = 4;
                 break;
             case 5:
-                dayDeadline = 4;
+                dayNumber = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setCredits(2);
                 }
                 break;
             case 6:
-                dayDeadline = 4;
+                dayNumber = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setCredits(4);
                 }
                 break;
             case 7:
             case 8:
-                dayDeadline = 4;
+                dayNumber = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setRank(2);
                 }
