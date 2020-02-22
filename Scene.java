@@ -17,13 +17,6 @@ public class Scene {
         this.roleList = roleList;
     }
 
-    public void reset(){
-
-    }
-
-    public void BonusMoneyDistribution(){
-
-    }
 
     public boolean hasOpenMains(){
         for (int i = 0; i < roleList.size(); i++) {

@@ -4,8 +4,6 @@ import java.util.Random;
 public class Board {
 
     public ArrayList<Set> sets;
-    private Player currPlayer;
-    private int numPlayers;
 
     public Board( ArrayList<Set> sets) {
         this.sets = sets;
@@ -34,11 +32,6 @@ public class Board {
     }
 
 
-
-    private void init(){
-
-
-    }
 
     public void setNumPlayers(int numPlayers){
 

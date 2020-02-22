@@ -13,7 +13,6 @@ public class Player {
     public int practiceChips;
     public Role role;
     public Set currSet;
-    public Scene currScene;
     public int points;
     private boolean hasMoved;
     private boolean hasUpgraded;
@@ -34,7 +33,6 @@ public class Player {
         turn = false;
         practiceChips = 0;
         this.currSet = currSet;
-        currScene = null;
         this.board = board;
         scanner = new Scanner(System.in);
         hasMoved = false;
@@ -43,20 +41,7 @@ public class Player {
     }
 
 
-    public int calcScore(){
 
-        return 0;
-    }
-
-    private ArrayList<String> availableOptions(){
-
-        return options;
-    }
-
-    private String promptPlayer(boolean turn){
-
-        return "";
-    }
 
     public void validateAction(String input){
         boolean correctInput = false;
@@ -317,9 +302,7 @@ public class Player {
         return options;
     }
 
-    public void setCurrScene(Scene scene){
-        currScene = scene;
-    }
+
 
     public void setCredits(int credits){
         this.credits = credits;

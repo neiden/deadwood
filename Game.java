@@ -10,7 +10,7 @@ public class Game {
     private Bank bank;
     private Scanner scanner;
     private int dayNumber;
-    private int dayDeadline;
+    private int initialDay;
     private boolean running;
     private int numPlayers;
     private ArrayList<Scene> scenes;
@@ -22,7 +22,7 @@ public class Game {
         playerList = new ArrayList<>();
         running = true;
         this.scenes = scenes;
-        dayDeadline = 0;
+        initialDay = 0;
         dayNumber = 0;
         devOptions = new ArrayList<>();
         bank = new Bank();
@@ -148,7 +148,9 @@ public class Game {
             if(playerList.get(i).currSet.getCurrScene() != null) {
                 if (playerList.get(i).currSet.getCurrScene().name.equals(scene.name)) {
                     playerList.get(i).currSet.setRoleActor(playerList.get(i).role.getName(), null);
-                    board.getSet(playerList.get(i).currSet.name).setCurrScene(null);
+                    if(i == playerList.size() - 1) {
+                        board.getSet(playerList.get(i).currSet.name).setCurrScene(null);
+                    }
                     playerList.get(i).role = null;
                 }
             }
@@ -167,9 +169,11 @@ public class Game {
 
     private void setLocation(){
         System.out.println("Where would you like to move: ");
-        String input = scanner.next();
+        scanner.nextLine();
+        String input = scanner.nextLine();
         currPlayer.currSet = board.getSet(input);
         System.out.println(currPlayer.name + " teleported to " + input);
+        //scanner.nextLine();
     }
 
     private void setRank(){
@@ -273,7 +277,7 @@ public class Game {
     }
 
     private void endDay(){
-        System.out.println("Day " + dayNumber + " has now been completed! ");
+        System.out.println("Day " + ((initialDay - dayNumber) + 1) + " has now been completed! ");
         dayNumber--;
         System.out.println(dayNumber + " days remain.");
         for (int i = 0; i < playerList.size(); i++) {
@@ -283,27 +287,29 @@ public class Game {
         }
     }
 
-    private void setCurrPlayer(Player player){
 
-    }
 
     private void setDayRules(int numPlayers){
         switch(numPlayers){
             case 2:
             case 3:
                 dayNumber = 3;
+                initialDay = 3;
                 break;
             case 4:
                 dayNumber = 4;
+                initialDay = 4;
                 break;
             case 5:
                 dayNumber = 4;
+                initialDay = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setCredits(2);
                 }
                 break;
             case 6:
                 dayNumber = 4;
+                initialDay = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setCredits(4);
                 }
@@ -311,6 +317,7 @@ public class Game {
             case 7:
             case 8:
                 dayNumber = 4;
+                initialDay = 4;
                 for (int i = 0; i < playerList.size(); i++) {
                     playerList.get(i).setRank(2);
                 }
