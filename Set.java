@@ -2,19 +2,21 @@ import java.util.ArrayList;
 
 public class Set {
     private Scene currScene;
+    private int initialShots;
     private int shotsRemaining;
     public String name;
     private ArrayList<Role> extras;
     private ArrayList<Upgrade> upgrades;
     private ArrayList<String> setNeighbors;
 
-    public Set(int shotsRemaining, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors){
-        this.shotsRemaining = shotsRemaining;
+    public Set(int initialShots, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors){
+        this.initialShots = initialShots;
         this.name = name;
         this.extras = extras;
         this.setNeighbors = setNeighbors;
         currScene = null;
         upgrades = null;
+        shotsRemaining = initialShots;
     }
 
     public String getName(){
@@ -28,6 +30,10 @@ public class Set {
     public void removeScene(){
         currScene = null;
 
+    }
+
+    public void setShotsRemaining(){
+        shotsRemaining = initialShots;
     }
 
     public ArrayList<String> getNeighbors(){
@@ -50,8 +56,6 @@ public class Set {
         }
     }
 
-    public  void upgradePlayer(Player player, String string){
-    }
 
     public  ArrayList<Upgrade> getUpgrades(){
         return null;

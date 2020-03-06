@@ -37,6 +37,12 @@ public class Board {
 
     }
 
+    public void resetShots(){
+        for (int i = 0; i < sets.size(); i++) {
+            sets.get(i).setShotsRemaining();
+        }
+    }
+
     public Set getSet(String setName){
         Set currset = null;
         for (int i = 0; i < sets.size(); i++) {

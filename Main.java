@@ -14,6 +14,8 @@ public class Main {
         ParseXML parse = new ParseXML();
         String boardName = "src/oard.xml";
         String cardName = "src/cards.xml";
+        GUI gui = new GUI();
+
 
         try{
 

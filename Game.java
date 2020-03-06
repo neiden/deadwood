@@ -148,6 +148,7 @@ public class Game {
             if(playerList.get(i).currSet.getCurrScene() != null) {
                 if (playerList.get(i).currSet.getCurrScene().name.equals(scene.name)) {
                     playerList.get(i).currSet.setRoleActor(playerList.get(i).role.getName(), null);
+                    playerList.get(i).practiceChips = 0;
                     if(i == playerList.size() - 1) {
                         board.getSet(playerList.get(i).currSet.name).setCurrScene(null);
                     }
@@ -173,7 +174,6 @@ public class Game {
         String input = scanner.nextLine();
         currPlayer.currSet = board.getSet(input);
         System.out.println(currPlayer.name + " teleported to " + input);
-        //scanner.nextLine();
     }
 
     private void setRank(){
@@ -285,6 +285,7 @@ public class Game {
             playerList.get(i).role = null;
             playerList.get(i).practiceChips = 0;
         }
+        board.resetShots();
     }
 
 
