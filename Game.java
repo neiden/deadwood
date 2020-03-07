@@ -15,6 +15,7 @@ public class Game {
     private int numPlayers;
     private ArrayList<Scene> scenes;
     private ArrayList<String> devOptions;
+    private InitController initController;
 
     public Game(ArrayList<Set> sets, ArrayList<Scene> scenes){
         board = new Board(sets);
@@ -26,6 +27,7 @@ public class Game {
         dayNumber = 0;
         devOptions = new ArrayList<>();
         bank = new Bank();
+        initController = new InitController();
     }
 
     public void init(){
