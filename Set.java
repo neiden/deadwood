@@ -1,22 +1,33 @@
+import com.sun.jdi.ShortType;
+
 import java.util.ArrayList;
 
 public class Set {
     private Scene currScene;
+    private ArrayList<Shot> shots;
     private int initialShots;
     private int shotsRemaining;
     public String name;
     private ArrayList<Role> extras;
     private ArrayList<Upgrade> upgrades;
     private ArrayList<String> setNeighbors;
+    private int[] sceneCoordinate;
 
-    public Set(int initialShots, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors){
-        this.initialShots = initialShots;
+    public Set(ArrayList<Shot> shots, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors, int[] sceneCoordinate){
+        if(shots != null){
+            initialShots = shots.size();
+        }
+        else{
+            initialShots = 0;
+        }
+        this.shots = shots;
         this.name = name;
         this.extras = extras;
         this.setNeighbors = setNeighbors;
         currScene = null;
         upgrades = null;
         shotsRemaining = initialShots;
+        this.sceneCoordinate = sceneCoordinate;
     }
 
     public String getName(){

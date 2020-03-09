@@ -1,10 +1,12 @@
+
+
 import java.util.ArrayList;
 
 public class Main {
     public static ArrayList<Set> sets = new ArrayList<>();
     public static ArrayList<Scene> scenes = new ArrayList<>();
 
-    public static void run(){
+    public static void run(ArrayList<String> playerList){
         ParseXML parse = new ParseXML();
         String boardName = "src/oard.xml";
         String cardName = "src/cards.xml";
@@ -22,7 +24,8 @@ public class Main {
 
 
         Game game = new Game(sets, scenes);
-        game.init();
+
+        game.init(playerList);
         while(game.getRunning()){
             game.run();
         }

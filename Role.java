@@ -4,12 +4,14 @@ public class Role {
     private String name;
     private String type;
     private Player actor;
+    private int[] coordinates;
 
-    public Role(int level, String phrase, String name, String type){
+    public Role(int level, String phrase, String name, String type, int[] coordinates){
         this.level = level;
         this.phrase = phrase;
         this.name = name;
         this.type = type;
+        this.coordinates = coordinates;
         actor = null;
     }
 

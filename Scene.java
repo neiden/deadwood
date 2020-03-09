@@ -8,13 +8,15 @@ public class Scene {
     private int sceneNum;
     private String description;
     private ArrayList<Role> roleList;
+    private String img;
 
-    public Scene(int budget, int sceneNum, String description, String name, ArrayList<Role> roleList){
+    public Scene(int budget, int sceneNum, String description, String name, ArrayList<Role> roleList, String img){
         this.name = name;
         this.budget = budget;
         this.sceneNum = sceneNum;
         this.description = description;
         this.roleList = roleList;
+        this.img = img;
     }
 
 

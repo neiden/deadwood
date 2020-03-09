@@ -6,8 +6,8 @@ public class CastingOffice extends Set {
     public Bank bank;
     public ArrayList<Upgrade>  upgrades;
 
-    public CastingOffice(int shotsRemaining, String name, ArrayList<Role> roleList, ArrayList<String> neighboringScenes, ArrayList<Upgrade> upgrades) {
-        super(shotsRemaining, name, roleList, neighboringScenes);
+    public CastingOffice(ArrayList<Shot> shotsRemaining, String name, ArrayList<Role> roleList, ArrayList<String> neighboringScenes, ArrayList<Upgrade> upgrades, int[] setCoordinate) {
+        super(shotsRemaining, name, roleList, neighboringScenes, setCoordinate);
         this.upgrades = upgrades;
         bank = new Bank();
     }

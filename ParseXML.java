@@ -51,10 +51,12 @@ public class ParseXML {
             int sceneNum = 0;
             String description = "";
             String name;
+            String img = "";
 
             Node card = cards.item(i);
 
             name = card.getAttributes().getNamedItem("name").getNodeValue();
+            img = card.getAttributes().getNamedItem("img").getNodeValue();
             budget = Integer.parseInt(card.getAttributes().getNamedItem("budget").getNodeValue());
 
             NodeList children = card.getChildNodes();
@@ -72,19 +74,27 @@ public class ParseXML {
                     int level = Integer.parseInt(currNode.getAttributes().getNamedItem("level").getNodeValue());
                     String partName = currNode.getAttributes().getNamedItem("name").getNodeValue();
                     String line = "";
+                    int[] roleCoordinates = new int[4];
                     NodeList partChildren = currNode.getChildNodes();
                     for (int k = 0; k < partChildren.getLength(); k++) {
                         Node partChildrenNode = partChildren.item(k);
                         if("line".equals(partChildrenNode.getNodeName())){
                             line = partChildrenNode.getTextContent();
                         }
+                        else if("area".equals(partChildrenNode.getNodeName())){
+                            roleCoordinates[0] = Integer.parseInt(partChildrenNode.getAttributes().getNamedItem("x").getNodeValue());
+                            roleCoordinates[1] = Integer.parseInt(partChildrenNode.getAttributes().getNamedItem("y").getNodeValue());
+                            roleCoordinates[2] = Integer.parseInt(partChildrenNode.getAttributes().getNamedItem("h").getNodeValue());
+                            roleCoordinates[3] = Integer.parseInt(partChildrenNode.getAttributes().getNamedItem("w").getNodeValue());
+
+                        }
                     }
 
-                    roles.add(new Role(level, line, partName, "main"));
+                    roles.add(new Role(level, line, partName, "main", roleCoordinates));
 
                 }
             }
-            Scenes.add(new Scene(budget, sceneNum, description, name, roles));
+            Scenes.add(new Scene(budget, sceneNum, description, name, roles, img));
         }
 
 
@@ -102,13 +112,14 @@ public class ParseXML {
             // System.out.println("printing information for Set " + (i) );
 
             ArrayList<String> neighbors = new ArrayList<>();
-            int shots = 0;
+            ArrayList<Shot> shots = new ArrayList<Shot>();
             ArrayList<Role> roles = new ArrayList<>();
 
             Node set = sets.item(i);
 
             String setName = set.getAttributes().getNamedItem("name").getNodeValue();
-            // System.out.println(setName);
+            int[] setCoordinates = new int[4];
+            //System.out.println(setName);
 
             NodeList children = set.getChildNodes();
             for (int j = 0; j < children.getLength(); j++) {
@@ -124,10 +135,35 @@ public class ParseXML {
                         neighbors.add(neighborName);
                     }
 
-                } else if ("takes".equals(currNode.getNodeName())) {
+                }
+                else if("area".equals(currNode.getNodeName())){
+                    setCoordinates[0] = Integer.parseInt(currNode.getAttributes().getNamedItem("x").getNodeValue());
+                    setCoordinates[1] = Integer.parseInt(currNode.getAttributes().getNamedItem("y").getNodeValue());
+                    setCoordinates[2] = Integer.parseInt(currNode.getAttributes().getNamedItem("h").getNodeValue());
+                    setCoordinates[3] = Integer.parseInt(currNode.getAttributes().getNamedItem("w").getNodeValue());
+                }
+                else if ("takes".equals(currNode.getNodeName())) {
                     NodeList takesList = currNode.getChildNodes();
 
-                    shots = (int) Math.floor(takesList.getLength() / 2);
+                    for (int k = 0; k < takesList.getLength(); k ++) {
+                        Node currTake = takesList.item(k);
+                        if("take".equals(currTake.getNodeName())) {
+                            NodeList takeChildren = currTake.getChildNodes();
+                            int shotNumber = Integer.parseInt(currTake.getAttributes().getNamedItem("number").getNodeValue());
+                            int[] shotCoordinates = new int[4];
+                            for (int l = 0; l < takeChildren.getLength(); l++) {
+                                Node takeChildrenCurrNode = takeChildren.item(l);
+
+                                if ("area".equals(takeChildrenCurrNode.getNodeName())) {
+                                    shotCoordinates[0] = Integer.parseInt(takeChildrenCurrNode.getAttributes().getNamedItem("x").getNodeValue());
+                                    shotCoordinates[1] = Integer.parseInt(takeChildrenCurrNode.getAttributes().getNamedItem("y").getNodeValue());
+                                    shotCoordinates[2] = Integer.parseInt(takeChildrenCurrNode.getAttributes().getNamedItem("h").getNodeValue());
+                                    shotCoordinates[3] = Integer.parseInt(takeChildrenCurrNode.getAttributes().getNamedItem("w").getNodeValue());
+                                }
+                            }
+                            shots.add(new Shot(shotNumber, shotCoordinates));
+                        }
+                    }
                     //System.out.println(shots);
                 } else if ("parts".equals(currNode.getNodeName())) {
                     NodeList partsList = currNode.getChildNodes();
@@ -140,14 +176,22 @@ public class ParseXML {
                         String line = "";
 
                         NodeList currPartList = currPart.getChildNodes();
+                        int[] roleCoordinates = new int[4];
                         for (int l = 0; l < currPartList.getLength(); l++) {
                             Node currPartListNode = currPartList.item(l);
 
                             if ("line".equals(currPartListNode.getNodeName())) {
                                 line = currPartListNode.getTextContent();
                             }
+                            else if("area".equals(currPartListNode.getNodeName())){
+                                roleCoordinates[0] = Integer.parseInt(currPartListNode.getAttributes().getNamedItem("x").getNodeValue());
+                                roleCoordinates[1] = Integer.parseInt(currPartListNode.getAttributes().getNamedItem("y").getNodeValue());
+                                roleCoordinates[2] = Integer.parseInt(currPartListNode.getAttributes().getNamedItem("h").getNodeValue());
+                                roleCoordinates[3] = Integer.parseInt(currPartListNode.getAttributes().getNamedItem("w").getNodeValue());
+
+                            }
                         }
-                        roles.add(new Role(level, line, partName, "extra"));
+                        roles.add(new Role(level, line, partName, "extra", roleCoordinates));
 
                     }
                     //System.out.println(roles);
@@ -158,7 +202,7 @@ public class ParseXML {
 
             }
 
-            Sets.add(new Set(shots, setName, roles, neighbors));
+            Sets.add(new Set(shots, setName, roles, neighbors, setCoordinates));
 
 
         }
@@ -182,13 +226,14 @@ public class ParseXML {
 
 
 
-        Sets.add(new Set(0, "trailer", null, neighbors));
+        Sets.add(new Set(null, "trailer", null, neighbors, new int[]{9 , 459, 208, 209}));
 
         NodeList officeList = root.getElementsByTagName("office");
         Node office = officeList.item(0);
         NodeList officeChild = office.getChildNodes();
         ArrayList<String> neighbors2 = new ArrayList<>();
         ArrayList<Upgrade> upgrades = new ArrayList<>();
+        int[] setCoordinates = new int[4];
         for (int i = 2; i < 7; i++) {
             upgrades.add(new Upgrade(i));
         }
@@ -202,6 +247,12 @@ public class ParseXML {
                     String neighborName = currNeighbor.getAttributes().getNamedItem("name").getNodeValue();
                     neighbors2.add(neighborName);
                 }
+            }
+            else if("area".equals(currNode.getNodeName())){
+                setCoordinates[0] = Integer.parseInt(currNode.getAttributes().getNamedItem("x").getNodeValue());
+                setCoordinates[1] = Integer.parseInt(currNode.getAttributes().getNamedItem("y").getNodeValue());
+                setCoordinates[2] = Integer.parseInt(currNode.getAttributes().getNamedItem("h").getNodeValue());
+                setCoordinates[3] = Integer.parseInt(currNode.getAttributes().getNamedItem("w").getNodeValue());
             }
             else if("upgrades".equals(currNode.getNodeName())){
                 NodeList upgradeList = currNode.getChildNodes();
@@ -220,7 +271,7 @@ public class ParseXML {
             }
         }
 
-        Sets.add(new CastingOffice(0, "office", null, neighbors2, upgrades));
+        Sets.add(new CastingOffice(null, "office", null, neighbors2, upgrades, setCoordinates));
 
         return Sets;
     }//class

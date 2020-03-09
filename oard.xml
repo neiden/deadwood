@@ -8,7 +8,9 @@
     </neighbors>
     <area x="21" y="69" h="115" w="205" />
     <takes>
-      <take number="3"><area x="36" y="11" h="47" w="47" /></take>
+      <take number="3">
+        <area x="36" y="11" h="47" w="47" />
+      </take>
       <take number="2"><area x="89" y="11" h="47" w="47" /></take>
       <take number="1"><area x="141" y="11" h="47" w="47" /></take>
     </takes>

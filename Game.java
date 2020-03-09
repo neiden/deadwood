@@ -27,10 +27,37 @@ public class Game {
         dayNumber = 0;
         devOptions = new ArrayList<>();
         bank = new Bank();
-        initController = new InitController();
     }
 
-    public void init(){
+
+
+    public void init(ArrayList<String> playerNames){
+
+        devOptions.add("locations");
+        devOptions.add("playerInfo");
+        devOptions.add("setLocation");
+        devOptions.add("setRank");
+        devOptions.add("setCurrency");
+        devOptions.add("setRemainingScenes");
+        devOptions.add("setDay");
+        devOptions.add("infoSet");
+
+        int numPlayers = playerNames.size();
+
+        board.setNumPlayers(numPlayers);
+        for(int i = 0; i < numPlayers; i ++){
+            playerList.add(new Player(playerNames.get(i), board.getSet("trailer"), board));
+        }
+
+        setDayRules(numPlayers);
+        board.setScenes(scenes);
+        currPlayer = playerList.get(0);
+        currPlayer.setTurn(true);
+    }
+
+
+
+    /*public void init(){
 
         devOptions.add("locations");
         devOptions.add("playerInfo");
@@ -70,7 +97,7 @@ public class Game {
                 System.out.println();
             }
         }
-    }
+    }*/
 
     public void run(){
         boolean notDevSelected = true;
