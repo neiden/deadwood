@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class InitController extends Application{
+public class InitController{
 
 
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         launch(args);
-    }
+    }*/
+    public static ArrayList<String> playerList = new ArrayList<>();
 
     public static void openFile(File file) throws Exception {
         if (Desktop.isDesktopSupported()) {
@@ -41,9 +42,10 @@ public class InitController extends Application{
         }
     }
 
-    @Override
-    public void start(Stage stage){
+
+    public static void start1(){
             File file = new File("src/Deadwood-Free-Edition-Rules.pdf");
+            Stage stage = new Stage();
 
             Scene game = new Scene(new Group());
             VBox startLayout = new VBox(50);
@@ -56,7 +58,13 @@ public class InitController extends Application{
             startLayout.getChildren().addAll(startMessage, start, quit, rules);
             Scene startScene = new Scene(startLayout, 300, 300);
 
-            start.setOnAction(e -> {initializeMenu();
+            start.setOnAction(e -> {
+                initializeMenu();
+                try {
+                    GameController.startGame(playerList, stage);
+                }catch(Exception a){
+                    System.out.println(a.getMessage());
+                }
                                     });
             quit.setOnAction(e -> stage.close());
             rules.setOnAction(e -> {
@@ -83,11 +91,11 @@ public class InitController extends Application{
 
             stage.setTitle("Board");
             stage.setScene(startScene);
-            stage.show();
+            stage.showAndWait();
 
     }
 
-    private int isValidPlayerNum(TextField textBox, String message, Label label){
+    private static int isValidPlayerNum(TextField textBox, String message, Label label){
         int rtrnNum = 0;
         try{
             rtrnNum = Integer.parseInt(message);
@@ -106,7 +114,7 @@ public class InitController extends Application{
 
     }
 
-    private void initializeMenu(){
+    private static void initializeMenu(){
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
         window.setMinWidth(400);
@@ -118,7 +126,6 @@ public class InitController extends Application{
         Label msg = new Label("Enter number of players (2 - 8)");
         TextField numPlayersBox = new TextField();
         Button submit = new Button("Submit");
-        ArrayList<String> playerList = new ArrayList<>();
         ArrayList<TextField> playerNames = new ArrayList<>();
 
         Label errorMsg = new Label();
@@ -130,7 +137,6 @@ public class InitController extends Application{
             for (int i = 0; i < playerNames.size(); i++) {
                 playerList.add(playerNames.get(i).getText());
             }
-            GameController.startGame(playerList);
             window.close();
         });
 
@@ -165,7 +171,7 @@ public class InitController extends Application{
 
 
         window.setScene(playerNumberScene);
-        window.show();
+        window.showAndWait();
 
 
 
