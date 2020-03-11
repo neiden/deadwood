@@ -150,29 +150,7 @@ public class Player {
 
 
      */
-     class playerOptionListener implements ActionListener{
 
-         @Override
-         public void actionPerformed(ActionEvent e) {
-             Button currButton = ((Button)e.getSource());
-             String text = currButton.getText();
-             switch(text){
-                 case "Work":
-                     //implement work
-                     //call Game.work -> calls player.validateInput("Work");
-                     break;
-                 case "Act":
-                     //etc
-                     break;
-                 case "Rehearse":
-
-                     break;
-                 case "End Turn":
-
-                     break;
-             }
-         }
-     }
 
     private void move(){
         boolean correctInput = false;

@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -7,6 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class BoardView  {
@@ -17,15 +20,16 @@ public class BoardView  {
     private Button move = new Button("Move");
     private Button upgrade = new Button("Upgrade");
     private Button endturn = new Button("End Turn");
-
+    public Stage mainStage;
 
 
 
     public BoardView(ArrayList<Player> playerList, ArrayList<Set> sets){
+
         createPlayers(playerList);
         createSets(sets);
 
-        Stage mainStage = new Stage();
+        mainStage = new Stage();
         BorderPane mainLayout = new BorderPane();
 
         //create HBox container with all player actions contained within, set to bottom of the mainLayout
@@ -50,12 +54,39 @@ public class BoardView  {
     }
 
 
+    public void addPlayerOptionListener(EventHandler<ActionEvent> listenForOptionButton){
+        work.setOnAction(listenForOptionButton);
+        act.setOnAction(listenForOptionButton);
+        rehearse.setOnAction(listenForOptionButton);
+        upgrade.setOnAction(listenForOptionButton);
+        move.setOnAction(listenForOptionButton);
+        endturn.setOnAction(listenForOptionButton);
+
+    }
+
 
     public void createPlayers(ArrayList<Player> playerList){
 
     }
 
     public void createSets(ArrayList<Set> sets){
+
+    }
+
+    public void setVisible(boolean visible){
+        if(visible){
+            mainStage.show();
+        }
+        else{
+            mainStage.close();
+        }
+    }
+
+    public void update(ArrayList<Player> playerList, ArrayList<Set> sets){
+        for (int i = 0; i < sets.size(); i++) {
+            sets.get(i).getSceneCoordinate();
+        }
+
 
     }
 

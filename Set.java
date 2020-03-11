@@ -43,6 +43,11 @@ public class Set {
 
     }
 
+    public int[] getSceneCoordinate(){
+
+        return sceneCoordinate;
+    }
+
     public void setShotsRemaining(){
         shotsRemaining = initialShots;
     }

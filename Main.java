@@ -8,6 +8,9 @@ import java.util.ArrayList;
 public class Main extends Application {
     public static ArrayList<Set> sets = new ArrayList<>();
     public static ArrayList<Scene> scenes = new ArrayList<>();
+    public BoardView view;
+    public GameModel model;
+    public Controller gameController;
 
     /*public static void start(ArrayList<String> playerList){
         ParseXML parse = new ParseXML();
@@ -43,26 +46,32 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        InitController.start1();
+
 
         ParseXML parse = new ParseXML();
         String boardName = "src/oard.xml";
         String cardName = "src/cards.xml";
 
 
-        try{
+        try {
 
             sets = parse.readBoardData(parse.getDocFromFile(boardName));
             scenes = parse.readCardData(parse.getDocFromFile(cardName));
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
+        model = new GameModel(sets, scenes);
+        view = new BoardView(model.getPlayerList(), model.getSets());
+        gameController = new Controller(view, model);
+
+        view.setVisible(true);
 
 
 
-        Game game = new Game(sets, scenes);
+/*
+        GameModel game = new GameModel(sets, scenes);
 
         game.init(InitController.playerList);
         while(game.getRunning()){
@@ -70,5 +79,7 @@ public class Main extends Application {
         }
         System.out.println("Thanks for playing!");
 
+    }
+    */
     }
 }
