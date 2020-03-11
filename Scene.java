@@ -1,3 +1,5 @@
+import javafx.scene.layout.BorderPane;
+
 import java.util.ArrayList;
 
 public class Scene {
@@ -18,6 +20,7 @@ public class Scene {
         this.roleList = roleList;
         this.img = img;
     }
+
 
 
     public boolean hasOpenMains(){

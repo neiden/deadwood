@@ -1,3 +1,7 @@
+import javafx.scene.control.Button;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -130,6 +134,45 @@ public class Player {
     private void endTurn(){
 
     }
+
+    /*
+       View:
+       void addAllWorkListeners(ActionListener playerOptionListener){
+            for( array of buttons){
+                button[i].addActionListener(playerOptionListener);
+            }
+       }
+
+       Controller:
+       View gameView = new View();
+       playerOptionListener plo = new playerOptionListener();
+       gameview.addAllWorkListeners(plo);
+
+
+     */
+     class playerOptionListener implements ActionListener{
+
+         @Override
+         public void actionPerformed(ActionEvent e) {
+             Button currButton = ((Button)e.getSource());
+             String text = currButton.getText();
+             switch(text){
+                 case "Work":
+                     //implement work
+                     //call Game.work -> calls player.validateInput("Work");
+                     break;
+                 case "Act":
+                     //etc
+                     break;
+                 case "Rehearse":
+
+                     break;
+                 case "End Turn":
+
+                     break;
+             }
+         }
+     }
 
     private void move(){
         boolean correctInput = false;
