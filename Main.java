@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Main extends Application {
     public static ArrayList<Set> sets = new ArrayList<>();
     public static ArrayList<Scene> scenes = new ArrayList<>();
+    public static ArrayList<String> playerList = new ArrayList<>();
     public BoardView view;
     public GameModel model;
     public Controller gameController;
@@ -47,6 +48,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
+        InitController.run();
+        System.out.println("Player List: " + playerList);
 
         ParseXML parse = new ParseXML();
         String boardName = "src/oard.xml";
@@ -62,11 +65,13 @@ public class Main extends Application {
             System.out.println(e.getMessage());
         }
 
-        model = new GameModel(sets, scenes);
-        view = new BoardView(model.getPlayerList(), model.getSets());
-        gameController = new Controller(view, model);
+        if(playerList.size() != 0) {
+            model = new GameModel(sets, scenes);
+            view = new BoardView(model.getPlayerList(), model.getSets());
+            gameController = new Controller(view, model, playerList);
+            view.setVisible(true);
 
-        view.setVisible(true);
+        }
 
 
 

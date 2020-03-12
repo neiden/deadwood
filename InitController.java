@@ -43,7 +43,7 @@ public class InitController{
     }
 
 
-    public static void start1(){
+    public static void run(){
             File file = new File("src/Deadwood-Free-Edition-Rules.pdf");
             Stage stage = new Stage();
 
@@ -60,11 +60,7 @@ public class InitController{
 
             start.setOnAction(e -> {
                 initializeMenu();
-                try {
-                    GameController.startGame(playerList, stage);
-                }catch(Exception a){
-                    System.out.println(a.getMessage());
-                }
+                stage.close();
                                     });
             quit.setOnAction(e -> stage.close());
             rules.setOnAction(e -> {
@@ -76,20 +72,7 @@ public class InitController{
             });
 
 
-            VBox layout = new VBox();
 
-
-            final ImageView imgView = new ImageView();
-            Image image1 = new Image("board.jpg");
-            imgView.setImage(image1);
-            imgView.setPreserveRatio(true);
-            imgView.setFitHeight(1600);
-            imgView.setFitWidth(1200);
-
-            layout.getChildren().addAll(imgView);
-            game.setRoot(layout);
-
-            stage.setTitle("Board");
             stage.setScene(startScene);
             stage.showAndWait();
 
@@ -172,6 +155,7 @@ public class InitController{
 
         window.setScene(playerNumberScene);
         window.showAndWait();
+        Main.playerList = playerList;
 
 
 

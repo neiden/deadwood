@@ -161,6 +161,17 @@ public class GameModel {
         }
     }
 
+    public void endCurrTurn(){
+        System.out.print("It was " + currPlayer.name + "'s turn, now its ");
+        if (playerList.indexOf(currPlayer) == playerList.size() - 1) {
+            currPlayer = playerList.get(0);
+        } else {
+            currPlayer = playerList.get(playerList.indexOf(currPlayer) + 1);
+        }
+        System.out.println(currPlayer.name + "'s turn!");
+        currPlayer.createOptionList();
+    }
+
     private void calcScore(){
         for (int i = 0; i < playerList.size(); i++) {
             playerList.get(i).points = playerList.get(i).credits + playerList.get(i).dollars + (5 * playerList.get(i).rank);

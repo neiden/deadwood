@@ -57,7 +57,7 @@ public class Player {
         if(correctInput) {
             switch (input) {
                 case "move":
-                    move();
+                    move(input);
                     break;
                 case "startwork":
                     startWork();
@@ -94,25 +94,25 @@ public class Player {
             if(currSet.hasScene()){
                 ArrayList<Role> roles = currSet.getAvailableRoles(rank);
                 if(roles.size() > 0){
-                    options.add("startwork");
+                    options.add("Work");
                 }
             }
             if(!hasMoved) {
-                options.add("move");
+                options.add("Move");
             }
         }
         else{
             if(practiceChips < currSet.getCurrScene().getBudget() - 1){
-                options.add("rehearse");
+                options.add("Rehearse");
             }
-            options.add("act");
+            options.add("Act");
         }
         if(currSet.name.equals("office")){
             if(!hasUpgraded) {
-                options.add("upgrade");
+                options.add("Upgrade");
             }
         }
-        options.add("endturn");
+        options.add("End Turn");
     }
 
     public void setMoved(boolean moved){
@@ -152,7 +152,7 @@ public class Player {
      */
 
 
-    private void move(){
+    /*private void move(){
         boolean correctInput = false;
         ArrayList<String> availableSets = currSet.getNeighbors();
         while(!correctInput) {
@@ -175,6 +175,11 @@ public class Player {
 
 
 
+    }*/
+    public void move(String input){
+                currSet = board.getSet(input);
+                hasMoved = true;
+                System.out.println(name + " has moved to " + currSet.name);
     }
 
     private void startWork(){
