@@ -161,6 +161,16 @@ public class GameModel {
         }
     }
 
+    public void sceneClosureCheck(){
+        if(currPlayer.currSet.getCurrScene() != null){
+            if(currPlayer.currSet.getShotsRemaining() < 1){//If scene completed, clean up variables
+                bank.bonusMoneyDistribution(playerList, currPlayer.currSet);
+                killScene(currPlayer.currSet.getCurrScene());
+                currPlayer.currSet.setCurrScene(null);
+            }
+        }
+    }
+
     public void endCurrTurn(){
         System.out.print("It was " + currPlayer.name + "'s turn, now its ");
         if (playerList.indexOf(currPlayer) == playerList.size() - 1) {
@@ -169,7 +179,22 @@ public class GameModel {
             currPlayer = playerList.get(playerList.indexOf(currPlayer) + 1);
         }
         System.out.println(currPlayer.name + "'s turn!");
+
+        sceneClosureCheck();
+
+        currPlayer.setTurn(true);
+        currPlayer.setMoved(false);
+        currPlayer.setUpgraded(false);
+
         currPlayer.createOptionList();
+
+
+        if (board.scenesRemaining() < 2) {
+            endDay();
+            if(dayNumber > 0){
+                startDay();
+            }
+        }
     }
 
     private void calcScore(){

@@ -24,7 +24,6 @@ public class Player {
     private Board board;
     private Scanner scanner;
     public ArrayList<String> options;
-    private boolean turn;
 
 
     public Player(String name, Set currSet, Board board){
@@ -34,7 +33,6 @@ public class Player {
         credits = 0;
         rank = 1;
         role = null;
-        turn = false;
         practiceChips = 0;
         this.currSet = currSet;
         this.board = board;
@@ -60,7 +58,7 @@ public class Player {
                     move(input);
                     break;
                 case "startwork":
-                    startWork();
+                    startWork(input);
                     isTurn = false;
                     break;
                 case "act":
@@ -77,7 +75,7 @@ public class Player {
                     break;
                 case "upgrade":
                     hasUpgraded = true;
-                    upgrade();
+                    upgrade(input);
                     break;
             }
         }
@@ -90,26 +88,27 @@ public class Player {
     public void createOptionList(){
         options.clear();
 
-        if(role == null){
-            if(currSet.hasScene()){
-                ArrayList<Role> roles = currSet.getAvailableRoles(rank);
-                if(roles.size() > 0){
-                    options.add("Work");
+        if(isTurn) {
+            if (role == null) {
+                if (currSet.hasScene()) {
+                    ArrayList<Role> roles = currSet.getAvailableRoles(rank);
+                    if (roles.size() > 0) {
+                        options.add("Work");
+                    }
                 }
+                if (!hasMoved) {
+                    options.add("Move");
+                }
+            } else {
+                if (practiceChips < currSet.getCurrScene().getBudget() - 1) {
+                    options.add("Rehearse");
+                }
+                options.add("Act");
             }
-            if(!hasMoved) {
-                options.add("Move");
-            }
-        }
-        else{
-            if(practiceChips < currSet.getCurrScene().getBudget() - 1){
-                options.add("Rehearse");
-            }
-            options.add("Act");
-        }
-        if(currSet.name.equals("office")){
-            if(!hasUpgraded) {
-                options.add("Upgrade");
+            if (currSet.name.equals("office")) {
+                if (!hasUpgraded) {
+                    options.add("Upgrade");
+                }
             }
         }
         options.add("End Turn");
@@ -178,10 +177,13 @@ public class Player {
     }*/
     public void move(String input){
                 currSet = board.getSet(input);
+                currSet.setShowing(true);
                 hasMoved = true;
                 System.out.println(name + " has moved to " + currSet.name);
     }
 
+
+    /*
     private void startWork(){
         boolean correctInput = false;
         ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
@@ -225,8 +227,34 @@ public class Player {
                 System.out.println("Incorrect Role Name");
             }
         }
+    }*/
+    public void startWork(String input){
+        ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
+        Iterator<Role> itr = availableRoles.iterator();
+        while(itr.hasNext()){
+            Role role = itr.next();
+            if(role.getLevel() > rank){
+                itr.remove();
+            }
+        }
+
+        for (int i = 0; i < availableRoles.size(); i++) {
+            if (availableRoles.get(i).getName().equals(input)) {
+                role = availableRoles.get(i);
+                if(role.getType().equals("extra")){
+                    currSet.setRoleActor(role.getName(), this);
+                }
+                else{
+                    currSet.getCurrScene().setRoleActor(role.getName(), this);
+                }
+            }
+        }
+        isTurn = false;
+        System.out.println(name + " is now working as " + role.getName());
+
     }
 
+    /*
     private void act(){
         Random rand = new Random();
         int roll = rand.nextInt(6) + 1;
@@ -254,8 +282,73 @@ public class Player {
             }
         }
 
+    }*/
+    public void act(){
+        Random rand = new Random();
+        int roll = rand.nextInt(6) + 1;
+        System.out.println("Balance before Acting: $" + dollars + ", " + credits);
+
+        if(roll + practiceChips >= currSet.getCurrScene().getBudget()){
+            if(role.getType().equals("extra")){
+                dollars++;
+                credits++;
+            }
+            else{
+                credits += 2;
+            }
+            currSet.decrementShot();
+        }
+        else{
+            if(role.getType().equals("extra")){
+                dollars++;
+            }
+        }
+        System.out.println("Balance after Acting: $" + dollars + ", " + credits);
+        isTurn = false;
     }
 
+
+    public void upgrade(String input){
+        String[] commaSplit = input.split(",");
+        int rankOption = Integer.parseInt(commaSplit[0].substring(6));
+        ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
+        for (int i = 0; i < currSet.getUpgrades().size(); i++) {
+            if(currSet.getUpgrades().get(i).level > rank){
+                if(currSet.getUpgrades().get(i).credits <= credits || currSet.getUpgrades().get(i).dollars <= dollars){
+                    upgradeOptions.add(currSet.getUpgrades().get(i));
+                }
+            }
+        }
+        if(upgradeOptions.size() > 0) {
+                Upgrade upgrade = null;
+                for (int i = 0; i < upgradeOptions.size(); i++) {
+                    if (upgradeOptions.get(i).level == rankOption) {
+                        upgrade = upgradeOptions.get(i);
+                    }
+                }
+                    rank = rankOption;
+                   /* if(dollars >= upgrade.dollars && credits >= upgrade.credits){
+                            String currency = scanner.next();
+                            if(currency.equals("dollars") || currency.equals("credits")) {
+                                if (currency.equals("dollars")) {
+                                    dollars -= upgrade.dollars;
+                                }
+                                else if (currency.equals("credits")) {
+                                    credits -= upgrade.credits;
+                                }
+                        }*/
+                    if(dollars >= upgrade.dollars){
+                        dollars -= upgrade.dollars;
+                    }
+                    else{
+                        credits -= upgrade.credits;
+                    }
+
+
+                    }
+        }
+
+    /*
     private void upgrade(){
         ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
         boolean correctInput = false;
@@ -316,11 +409,37 @@ public class Player {
         else {
             System.out.println("There are no available upgrades for you right now!");
         }
+    }*/
+
+    public void rehearse(){
+        practiceChips++;
+        isTurn = false;
     }
 
-    private void rehearse(){
-        practiceChips++;
-        System.out.println(name + " now has " + practiceChips + " chip(s)");
+    public ArrayList<Upgrade> getAvailableUpgrades(){
+        ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
+        for (int i = 0; i < currSet.getUpgrades().size(); i++) {
+            if(currSet.getUpgrades().get(i).level > rank){
+                if(currSet.getUpgrades().get(i).credits <= credits || currSet.getUpgrades().get(i).dollars <= dollars){
+                    upgradeOptions.add(currSet.getUpgrades().get(i));
+                }
+            }
+        }
+
+        return upgradeOptions;
+    }
+
+    public ArrayList<Role> getAvailableRoles(){
+        ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
+        Iterator<Role> itr = availableRoles.iterator();
+        while(itr.hasNext()){
+            Role role = itr.next();
+            if(role.getLevel() > rank){
+                itr.remove();
+            }
+        }
+
+        return availableRoles;
     }
 
 

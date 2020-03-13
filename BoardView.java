@@ -4,10 +4,12 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.awt.event.ActionListener;
@@ -24,8 +26,15 @@ public class BoardView  {
     HBox moveOptions;
     ArrayList<Button> neighbors;
     ArrayList<Button> optionsList;
+    ArrayList<Button> workList;
+    ArrayList<Button> upgradeList;
+    HBox upgradeOptions;
     HBox playerOptions;
+    HBox workOptions;
     BorderPane mainLayout;
+    ImageView boardImg;
+
+    VBox playerData;
     public Stage mainStage;
 
 
@@ -39,7 +48,11 @@ public class BoardView  {
         endturn = new Button("End Turn");
         neighbors = new ArrayList<>();
         optionsList = new ArrayList<>();
+        workList = new ArrayList<>();
+        upgradeList = new ArrayList<>();
+        workOptions = new HBox(5);
         moveOptions = new HBox(5);
+        upgradeOptions = new HBox(5);
 
 
         createPlayers(playerList);
@@ -54,18 +67,20 @@ public class BoardView  {
         mainLayout.setBottom(playerOptions);
 
         //create board, set to center of mainLayout
-        final ImageView imgView = new ImageView();
+        boardImg = new ImageView();
         Image image1 = new Image("board.jpg");
-        imgView.setImage(image1);
-        imgView.setPreserveRatio(true);
-        imgView.setFitHeight(1600);
-        imgView.setFitWidth(1200);
-        mainLayout.setCenter(imgView);
+        boardImg.setImage(image1);
+        boardImg.setPreserveRatio(true);
+        boardImg.setFitHeight(1600);
+        boardImg.setFitWidth(1200);
+        mainLayout.getChildren().add(boardImg);
+
 
         Scene scene = new Scene(mainLayout);
 
         mainStage.setTitle("Deadwood");
         mainStage.setScene(scene);
+        mainStage.setFullScreen(true);
         
     }
 
@@ -78,6 +93,30 @@ public class BoardView  {
         move.setOnAction(listenForOptionButton);
         endturn.setOnAction(listenForOptionButton);
 
+    }
+
+    public void initPlayerData(ArrayList<Player> playerList){
+        playerData.getChildren().clear();
+        for (int i = 0; i < playerList.size(); i++) {
+            Player currPlayer = playerList.get(i);
+            VBox box = new VBox(1);
+            Label name = new Label("Player : "  + currPlayer.name);
+            Label rank = new Label("Rank: " + currPlayer.rank + "");
+            Label dollars = new Label("Dollars: " + currPlayer.dollars + "");
+            Label credits = new Label("Credits: " + currPlayer.credits + "");
+            Label chips = new Label("Rehearsal Chips: " +currPlayer.practiceChips + "");
+            Label role = new Label();
+            if(currPlayer.role != null){
+                role.setText("Role: " + currPlayer.role.getName());
+            }
+            else{
+                role.setText("Role: Not working curently");
+            }
+            Label location = new Label("Location: " + currPlayer.currSet.name + "");
+            box.getChildren().addAll(name, rank, dollars, credits, chips, role, location);
+            box.setMaxHeight(.5);
+            playerData.getChildren().add(box);
+        }
     }
 
 
@@ -104,11 +143,25 @@ public class BoardView  {
 
     }
 
-    public void init(Player currPlayer, ArrayList<Set> sets){
+    public void init(Player currPlayer, ArrayList<Set> sets, ArrayList<Player> playerList){
         currPlayer.createOptionList();
         validateOptions(currPlayer.getOptions());
 
+        playerData = new VBox(5);
+        initPlayerData(playerList);
+        mainLayout.setRight(playerData);
 
+        for (int i = 0; i < sets.size(); i++) {
+            if(sets.get(i).getImageView() != null){
+                mainLayout.getChildren().add(sets.get(i).getImageView());
+            }
+            if(sets.get(i).getShotsView() != null){
+                for (int j = 0; j < sets.get(i).getShotsView().size(); j++) {
+                    mainLayout.getChildren().add(sets.get(i).getShotsView().get(j));
+                }
+            }
+        }
+        //mainStage.setFullScreen(true);
     }
 
     public void createMoveOptions(Set currSet){
@@ -120,6 +173,55 @@ public class BoardView  {
         mainLayout.setBottom(moveOptions);
         System.out.println(currSet.getNeighbors());
     }
+
+    public void createWorkOptions(Player currPlayer){
+        ArrayList<Role> availableRoles = currPlayer.getAvailableRoles();
+        for (int i = 0; i < availableRoles.size(); i++) {
+            String name = availableRoles.get(i).getName();
+            String rank = availableRoles.get(i).getLevel() + "";
+
+            Button currRole = new Button();
+            currRole.setText(name + ", " + rank );
+            workList.add(currRole);
+            workOptions.getChildren().add(currRole);
+        }
+        //playerOptions.setVisible(false);
+        mainLayout.setBottom(workOptions);
+        System.out.println(workList);
+    }
+
+    public void createUpgradeOptions(Player currPlayer){
+        ArrayList<Upgrade> availableUpgrades = currPlayer.getAvailableUpgrades();
+        for (int i = 0; i < availableUpgrades.size(); i++) {
+            String rank = "Level: " + availableUpgrades.get(i).level + ", ";
+            String dollars = "Dollar Cost: " + availableUpgrades.get(i).dollars + ", ";
+            String credits = "Credit Cost: " + availableUpgrades.get(i).credits + "";
+
+            Button currUpgrade = new Button();
+            currUpgrade.setText(rank + dollars + credits);
+            upgradeList.add(currUpgrade);
+            upgradeOptions.getChildren().add(currUpgrade);
+        }
+
+        mainLayout.setBottom(upgradeOptions);
+        System.out.println(upgradeList);
+
+    }
+
+    public void addUpgradeOptionListener(EventHandler<ActionEvent> listenForUpgradeButton){
+        for (int i = 0; i < workList.size(); i++) {
+            upgradeList.get(i).setOnAction(listenForUpgradeButton);
+        }
+    }
+
+
+    public void addWorkOptionListener(EventHandler<ActionEvent> listenForWorkButton){
+        for (int i = 0; i < workList.size(); i++) {
+            workList.get(i).setOnAction(listenForWorkButton);
+        }
+    }
+
+
 
     public void addMoveOptionListener(EventHandler<ActionEvent> listenForMoveButton){
         for (int i = 0; i < neighbors.size(); i++) {
@@ -139,11 +241,35 @@ public class BoardView  {
     }
 
     public void update(ArrayList<Player> playerList, ArrayList<Set> sets){
+        mainLayout.getChildren().clear();
+        mainLayout.getChildren().add(boardImg);
         for (int i = 0; i < sets.size(); i++) {
-            sets.get(i).getSceneCoordinate();
-        }
+            if(sets.get(i).getImageView() != null){
+                mainLayout.getChildren().add(sets.get(i).getImageView());
+            }
+            if(sets.get(i).getShotsView() != null){
+                for (int j = 0; j < sets.get(i).getShotsRemaining(); j++) {
+                    mainLayout.getChildren().add(sets.get(i).getShotsView().get(j));
+                }
+            }
+        //TODO: implement displaying players location
+    }
+        playerData = new VBox(5);
+        initPlayerData(playerList);
+        mainLayout.setRight(playerData);
+
+
+
+
+        upgradeOptions.getChildren().clear();
         moveOptions.getChildren().clear();
+        workOptions.getChildren().clear();
         mainLayout.setBottom(playerOptions);
+
+
+        upgradeList.clear();
+        optionsList.clear();
+        workList.clear();
         neighbors.clear();
     }
 

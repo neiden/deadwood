@@ -32,6 +32,10 @@ public class Scene {
         return false;
     }
 
+    public String getImageName(){
+        return img;
+    }
+
     public ArrayList<Role> getRoleList(){
         return roleList;
     }

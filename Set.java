@@ -1,5 +1,8 @@
 import com.sun.jdi.ShortType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Set {
@@ -11,6 +14,11 @@ public class Set {
     private ArrayList<Role> extras;
     private ArrayList<Upgrade> upgrades;
     private ArrayList<String> setNeighbors;
+    private ImageView imgMainView;
+    private ArrayList<ImageView> shotCounterView;
+
+    private Image mainImage;
+    private Image backImage;
     private int[] sceneCoordinate;
 
     public Set(ArrayList<Shot> shots, String name, ArrayList<Role> extras, ArrayList<String> setNeighbors, int[] sceneCoordinate){
@@ -28,14 +36,57 @@ public class Set {
         upgrades = null;
         shotsRemaining = initialShots;
         this.sceneCoordinate = sceneCoordinate;
+        shotCounterView = null;
+        imgMainView = null;
     }
 
     public String getName(){
         return name;
     }
 
+    public ImageView getImageView(){
+        return imgMainView;
+    }
+
+    public ArrayList<ImageView> getShotsView(){
+        return shotCounterView;
+    }
+
+    public void setShowing(boolean playerPresent){
+        if(playerPresent){
+            if(imgMainView != null) {
+                imgMainView.setImage(mainImage);
+            }
+        }
+    }
+
     public void addScene(Scene scene){
+        imgMainView = new ImageView();
         currScene = scene;
+
+        backImage = new Image("CardBack-small.jpg");
+        mainImage = new Image("Cards/"+scene.getImageName());
+
+        imgMainView.setImage(backImage);
+        imgMainView.setX(sceneCoordinate[0]);
+        imgMainView.setY(sceneCoordinate[1]);
+        imgMainView.setFitHeight(sceneCoordinate[2]);
+        imgMainView.setFitWidth(sceneCoordinate[3]);
+
+
+        shotCounterView = new ArrayList<>();
+        for (int i = 0; i < shotsRemaining; i++) {
+            ImageView shotImgView = new ImageView();
+            shotImgView.setImage(new Image("shot.png"));
+            shotImgView.setX(shots.get(i).shotCoordinates[0]);
+            shotImgView.setY(shots.get(i).shotCoordinates[1]);
+            shotImgView.setFitHeight(shots.get(i).shotCoordinates[2]);
+            shotImgView.setFitWidth(shots.get(i).shotCoordinates[3]);
+
+            shotCounterView.add(shotImgView);
+        }
+
+
     }
 
     public void removeScene(){
@@ -110,6 +161,9 @@ public class Set {
 
     public void decrementShot(){
         shotsRemaining--;
+        if(shotsRemaining == 0){
+            imgMainView = null;
+        }
     }
 
     public boolean hasAvailableRoles(){
