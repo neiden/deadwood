@@ -1,4 +1,6 @@
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,10 +25,17 @@ public class Player {
     private boolean isTurn;
     private Board board;
     private Scanner scanner;
+    private ImageView imgView;
+    private Image icon;
+    private int playerNum;
+    private String playerIcon;
+    String hexCode;
     public ArrayList<String> options;
 
 
-    public Player(String name, Set currSet, Board board){
+    public Player(String name, Set currSet, Board board, int playerNum){
+        this.playerNum = playerNum;
+        createPlayerIcon(playerNum);
         options = new ArrayList<>();
         this.name = name;
         dollars = 0;
@@ -40,53 +49,82 @@ public class Player {
         hasMoved = false;
         hasUpgraded = false;
         points = 0;
+        imgView = null;
+        icon = new Image("dice/" + playerIcon + rank + ".png");
+        updatePlayerIcon();
     }
-
-
-
-
-    public void validateAction(String input){
-        boolean correctInput = false;
-        for (int i = 0; i < options.size(); i++) {
-            if(input.equals(options.get(i))){
-                correctInput = true;
-            }
-        }
-        if(correctInput) {
-            switch (input) {
-                case "move":
-                    move(input);
-                    break;
-                case "startwork":
-                    startWork(input);
-                    isTurn = false;
-                    break;
-                case "act":
-                    act();
-                    isTurn = false;
-                    break;
-                case "rehearse":
-                    isTurn = false;
-                    rehearse();
-                    break;
-                case "endturn":
-                    isTurn = false;
-                    endTurn();
-                    break;
-                case "upgrade":
-                    hasUpgraded = true;
-                    upgrade(input);
-                    break;
-            }
+    //Updates the players icon to correctly match their position and rank.
+    public void updatePlayerIcon(){
+        int[] coordinates = currSet.getSceneCoordinate();
+        icon = new Image("dice/" + playerIcon + rank + ".png");
+        imgView = new ImageView();
+        imgView.setImage(icon);
+        if(role == null){
+            imgView.setX(coordinates[0] + (playerNum * 20));
+            imgView.setY(coordinates[1]);
+            imgView.setFitHeight(44);
+            imgView.setFitWidth(45);
         }
         else{
-            System.out.println("Incorrect Input");
+            int[] roleCoordinates = role.getCoordinates();
+            if(role.getType().equals("main")) {
+                imgView.setX(coordinates[0] + roleCoordinates[0] -1);
+                imgView.setY(coordinates[1] + roleCoordinates[1]);
+            }
+            else{
+                imgView.setX(roleCoordinates[0]);
+                imgView.setY(roleCoordinates[1]);
+            }
+            imgView.setFitHeight(44);
+            imgView.setFitWidth(45);
+        }
+
+    }
+    //Creates the icon file name and hexCode from the player number
+    private void createPlayerIcon(int playerNum){
+        switch(playerNum){
+            case 1:
+                playerIcon = "b";
+                hexCode = "005482";
+                break;
+            case 2:
+                playerIcon = "c";
+                hexCode = "00FFFF";
+                break;
+            case 3:
+                playerIcon = "g";
+                hexCode = "33FF33";
+                break;
+            case 4:
+                playerIcon = "o";
+                hexCode = "FF8000";
+                break;
+            case 5:
+                playerIcon = "p";
+                hexCode = "FFCCCC";
+                break;
+            case 6:
+                playerIcon = "r";
+                hexCode = "FF0000";
+                break;
+            case 7:
+                playerIcon = "v";
+                hexCode = "CC00CC";
+                break;
+            case 8:
+                playerIcon = "w";
+                hexCode = "FFFFFF";
+                break;
         }
     }
 
-
+    public String getHexCode(){
+        return hexCode;
+    }
+    //Main logic in determining the options a player has at any given moment. Will always offer end turn.
     public void createOptionList(){
         options.clear();
+
 
         if(isTurn) {
             if (role == null) {
@@ -106,7 +144,7 @@ public class Player {
                 options.add("Act");
             }
             if (currSet.name.equals("office")) {
-                if (!hasUpgraded) {
+                if (!hasUpgraded && getAvailableUpgrades().size() > 0) {
                     options.add("Upgrade");
                 }
             }
@@ -122,6 +160,10 @@ public class Player {
         hasUpgraded = upgraded;
     }
 
+    public ImageView getImageView(){
+        return imgView;
+    }
+
     public boolean getTurn(){
         return isTurn;
     }
@@ -130,104 +172,14 @@ public class Player {
         isTurn = turn;
     }
 
-    private void endTurn(){
 
-    }
-
-    /*
-       View:
-       void addAllWorkListeners(ActionListener playerOptionListener){
-            for( array of buttons){
-                button[i].addActionListener(playerOptionListener);
-            }
-       }
-
-       Controller:
-       View gameView = new View();
-       playerOptionListener plo = new playerOptionListener();
-       gameview.addAllWorkListeners(plo);
-
-
-     */
-
-
-    /*private void move(){
-        boolean correctInput = false;
-        ArrayList<String> availableSets = currSet.getNeighbors();
-        while(!correctInput) {
-            System.out.println("Available Sets: " + availableSets);
-
-            String input = scanner.nextLine();
-            for (int i = 0; i < availableSets.size(); i++) {
-                if (input.equals(availableSets.get(i))) {
-                    correctInput = true;
-                }
-            }
-            if (correctInput) {
-                currSet = board.getSet(input);
-                hasMoved = true;
-                System.out.println(name + " has moved to " + currSet.name);
-            } else {
-                System.out.println("Invalid Destination");
-            }
-        }
-
-
-
-    }*/
     public void move(String input){
                 currSet = board.getSet(input);
                 currSet.setShowing(true);
                 hasMoved = true;
-                System.out.println(name + " has moved to " + currSet.name);
     }
 
-
-    /*
-    private void startWork(){
-        boolean correctInput = false;
-        ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
-        Iterator<Role> itr = availableRoles.iterator();
-        while(itr.hasNext()){
-            Role role = itr.next();
-            if(role.getLevel() > rank){
-                itr.remove();
-            }
-        }
-        while(!correctInput) {
-            System.out.println("Scene being shot: ");
-            System.out.println(currSet.getCurrScene());
-            System.out.println("Available Roles: ");
-            for (int i = 0; i < availableRoles.size(); i++) {
-                System.out.print(availableRoles.get(i).getName() + ", rank " + availableRoles.get(i).getLevel() + ", type " + availableRoles.get(i).getType());
-                System.out.println();
-            }
-            String input = scanner.nextLine();
-            for (int i = 0; i < availableRoles.size(); i++) {
-                if (input.equals(availableRoles.get(i).getName())) {
-                    correctInput = true;
-                }
-            }
-            if (correctInput) {
-
-                for (int i = 0; i < availableRoles.size(); i++) {
-                    if (availableRoles.get(i).getName().equals(input)) {
-                        role = availableRoles.get(i);
-                        if(role.getType().equals("extra")){
-                            currSet.setRoleActor(role.getName(), this);
-                        }
-                        else{
-                            currSet.getCurrScene().setRoleActor(role.getName(), this);
-                        }
-                    }
-                }
-
-                System.out.println(name + " is now working as " + role.getName());
-            } else {
-                System.out.println("Incorrect Role Name");
-            }
-        }
-    }*/
+    //Given an input, sets the players role to the desired role.
     public void startWork(String input){
         ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
         Iterator<Role> itr = availableRoles.iterator();
@@ -250,43 +202,13 @@ public class Player {
             }
         }
         isTurn = false;
-        System.out.println(name + " is now working as " + role.getName());
 
     }
 
-    /*
-    private void act(){
-        Random rand = new Random();
-        int roll = rand.nextInt(6) + 1;
-        System.out.println(name + " rolled a " + roll + ", + " + practiceChips + " is " + (roll + practiceChips) + "!");
-
-        if(roll + practiceChips >= currSet.getCurrScene().getBudget()){
-            if(role.getType().equals("extra")){
-                dollars++;
-                credits++;
-            }
-            else{
-                credits += 2;
-            }
-            currSet.decrementShot();
-            System.out.println("It's greater or equal to " + currSet.getCurrScene().getBudget() + "! " + currSet.getShotsRemaining() + " shots remain.");
-            if(currSet.getShotsRemaining() < 1) {
-                System.out.println(name + " completed the scene!");
-            }
-        }
-        else{
-            System.out.println("It wasn't higher than " + currSet.getCurrScene().getBudget() + "...");
-            if(role.getType().equals("extra")){
-                dollars++;
-                System.out.println("You still get 1 dollar though.");
-            }
-        }
-
-    }*/
+    //Sets a random number from 1 to 6 against the budget of the scene and compares its value.
     public void act(){
         Random rand = new Random();
         int roll = rand.nextInt(6) + 1;
-        System.out.println("Balance before Acting: $" + dollars + ", " + credits);
 
         if(roll + practiceChips >= currSet.getCurrScene().getBudget()){
             if(role.getType().equals("extra")){
@@ -303,14 +225,16 @@ public class Player {
                 dollars++;
             }
         }
-        System.out.println("Balance after Acting: $" + dollars + ", " + credits);
+
         isTurn = false;
     }
 
-
+    //Given an input, upgrades a player based on their desired rank.
+    //Given an equal number of dollars and credits, always defaults dollars to be taken first.
     public void upgrade(String input){
         String[] commaSplit = input.split(",");
-        int rankOption = Integer.parseInt(commaSplit[0].substring(6));
+        String strRank  = commaSplit[0].substring(7);
+        int rankOption = Integer.parseInt(strRank);
         ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
         for (int i = 0; i < currSet.getUpgrades().size(); i++) {
             if(currSet.getUpgrades().get(i).level > rank){
@@ -327,16 +251,7 @@ public class Player {
                     }
                 }
                     rank = rankOption;
-                   /* if(dollars >= upgrade.dollars && credits >= upgrade.credits){
-                            String currency = scanner.next();
-                            if(currency.equals("dollars") || currency.equals("credits")) {
-                                if (currency.equals("dollars")) {
-                                    dollars -= upgrade.dollars;
-                                }
-                                else if (currency.equals("credits")) {
-                                    credits -= upgrade.credits;
-                                }
-                        }*/
+
                     if(dollars >= upgrade.dollars){
                         dollars -= upgrade.dollars;
                     }
@@ -346,76 +261,15 @@ public class Player {
 
 
                     }
+        hasUpgraded = true;
         }
 
-    /*
-    private void upgrade(){
-        ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
-        boolean correctInput = false;
-        for (int i = 0; i < currSet.getUpgrades().size(); i++) {
-            if(currSet.getUpgrades().get(i).level > rank){
-                if(currSet.getUpgrades().get(i).credits <= credits || currSet.getUpgrades().get(i).dollars <= dollars){
-                    upgradeOptions.add(currSet.getUpgrades().get(i));
-                }
-            }
-        }
-        if(upgradeOptions.size() > 0) {
-            while (!correctInput) {
-                System.out.println(upgradeOptions);
-                System.out.println("Enter corresponding number for rank: ");
-                int input = scanner.nextInt();
-                Upgrade upgrade = null;
-                for (int i = 0; i < upgradeOptions.size(); i++) {
-                    if (upgradeOptions.get(i).level == input) {
-                        correctInput = true;
-                        upgrade = upgradeOptions.get(i);
-                    }
-                }
-                if(correctInput){
-                    rank = input;
-                    if(dollars >= upgrade.dollars && credits >= upgrade.credits){
-                        System.out.println("Which currency do you want to use? [dollars], [credits]");
-                        boolean correctCurrency = false;
-                        while(!correctCurrency){
-                            String currency = scanner.next();
-                            if(currency.equals("dollars") || currency.equals("credits")) {
-                                correctCurrency = true;
-                                if (currency.equals("dollars")) {
-                                    dollars -= upgrade.dollars;
-                                }
-                                else if (currency.equals("credits")) {
-                                    credits -= upgrade.credits;
-                                }
-                            }
-                            else{
-                                System.out.println("Enter a valid option!");
-                            }
-                        }
-                    }
-                    else if(dollars >= upgrade.dollars){
-                        dollars -= upgrade.dollars;
-                    }
-                    else{
-                        credits -= upgrade.credits;
-                    }
-                    System.out.println(name + " is now rank " + rank + "!");
-                    scanner.nextLine();
-                }
-                else{
-                    System.out.println("Invalid upgrade level.");
-                }
-            }
-        }
-        else {
-            System.out.println("There are no available upgrades for you right now!");
-        }
-    }*/
 
     public void rehearse(){
         practiceChips++;
         isTurn = false;
     }
-
+    //Returns list of the available upgrade options
     public ArrayList<Upgrade> getAvailableUpgrades(){
         ArrayList<Upgrade> upgradeOptions = new ArrayList<>();
         for (int i = 0; i < currSet.getUpgrades().size(); i++) {
@@ -428,7 +282,7 @@ public class Player {
 
         return upgradeOptions;
     }
-
+    //Returns list of available roles
     public ArrayList<Role> getAvailableRoles(){
         ArrayList<Role> availableRoles = currSet.getAvailableRoles(rank);
         Iterator<Role> itr = availableRoles.iterator();
@@ -455,10 +309,6 @@ public class Player {
 
     public void setRank(int rank){
         this.rank = rank;
-    }
-
-    public void setCurrSet(Set currSet){
-        this.currSet = currSet;
     }
 
     public String toString(){

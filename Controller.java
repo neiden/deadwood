@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Controller {
     private BoardView view;
     private GameModel model;
-
+    //Creates Controller object that has an instance of the model and view so that it can communicate between the two
     public Controller(BoardView view, GameModel model, ArrayList<String> playerList){
         this.view = view;
         this.model = model;
@@ -17,7 +17,8 @@ public class Controller {
         this.view.init(this.model.getCurrPlayer(), this.model.getSets(), this.model.getPlayerList());
     }
 
-    //Defines the behavior of the buttons
+    //Defines the behavior of the player option buttons
+    //After each button press, updates the graphics to ensure that the screen is accurately representing the game
     EventHandler<ActionEvent> playerOptionHandler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
@@ -25,7 +26,6 @@ public class Controller {
             String text = currButton.getText();
             switch(text){
                 case "Work":
-                    System.out.println("Work");
                     view.createWorkOptions(model.getCurrPlayer());
                     view.addWorkOptionListener(workOptionHandler);
 
@@ -33,8 +33,6 @@ public class Controller {
                     view.validateOptions(model.getCurrPlayer().getOptions());
                     break;
                 case "Act":
-                    //etc
-                    System.out.println("Act");
                     model.getCurrPlayer().act();
 
                     model.sceneClosureCheck();
@@ -45,33 +43,34 @@ public class Controller {
                 case "Rehearse":
                     model.getCurrPlayer().rehearse();
 
-                    System.out.println(model.getCurrPlayer().name + " has " + model.getCurrPlayer().practiceChips + " practice chips.");
-
                     model.getCurrPlayer().createOptionList();
                     view.validateOptions(model.getCurrPlayer().getOptions());
                     view.update(model.getPlayerList(), model.getSets());
-                    //view.update(model.getAllPlayers(), model.getAllSets());
                     break;
                 case "Move":
                     view.createMoveOptions(model.getCurrPlayer().currSet);
                     view.addMoveOptionListener(moveOptionHandler);
                     break;
                 case "Upgrade":
-                    System.out.println("Upgrade");
                     view.createUpgradeOptions(model.getCurrPlayer());
                     view.addUpgradeOptionListener(upgradeOptionHandler);
 
                     model.getCurrPlayer().createOptionList();
                     view.validateOptions(model.getCurrPlayer().getOptions());
-                    view.update(model.getPlayerList(), model.getSets());
                     break;
                 case "End Turn":
-                    model.endCurrTurn();
-                    view.validateOptions(model.getCurrPlayer().getOptions());
+                    if(model.endCurrTurn()){
+                        view.setEndScreen(model.calcScore());
+                    }
+                    else{
+                        view.validateOptions(model.getCurrPlayer().getOptions());
+                        view.update(model.getPlayerList(), model.getSets());
+                    }
                     break;
         }
     }};
 
+    //Defines behavior for the work options
     EventHandler<ActionEvent> workOptionHandler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
@@ -97,13 +96,13 @@ public class Controller {
             view.validateOptions(model.getCurrPlayer().getOptions());
             view.update(model.getPlayerList(), model.getSets());
         }};
-
+    //Defines behavior for the upgrade buttons
     EventHandler<ActionEvent> upgradeOptionHandler = new EventHandler<ActionEvent>() {
         @Override
         public void handle(ActionEvent actionEvent) {
             Button currButton = ((Button)actionEvent.getSource());
             String text = currButton.getText();
-            model.getCurrPlayer().upgrade(currButton.getText());
+            model.getCurrPlayer().upgrade(text);
 
             model.getCurrPlayer().createOptionList();
             view.validateOptions(model.getCurrPlayer().getOptions());

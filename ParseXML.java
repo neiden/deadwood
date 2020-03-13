@@ -35,7 +35,7 @@ public class ParseXML {
                 ex.printStackTrace();
             }
             return doc;
-        } // exception handling
+        }
 
     }
 
@@ -67,7 +67,7 @@ public class ParseXML {
 
                     description = currNode.getTextContent();
                     sceneNum = Integer.parseInt(currNode.getAttributes().getNamedItem("number").getNodeValue());
-                  //  System.out.println(name + " \t"  + budget + "\t" + description + " \t" + sceneNum + "\n");
+
                 }
 
                 else if("part".equals(currNode.getNodeName())){
@@ -109,7 +109,7 @@ public class ParseXML {
 
 
         for (int i = 0; i < sets.getLength(); i++) {
-            // System.out.println("printing information for Set " + (i) );
+
 
             ArrayList<String> neighbors = new ArrayList<>();
             ArrayList<Shot> shots = new ArrayList<Shot>();
@@ -119,7 +119,7 @@ public class ParseXML {
 
             String setName = set.getAttributes().getNamedItem("name").getNodeValue();
             int[] setCoordinates = new int[4];
-            //System.out.println(setName);
+
 
             NodeList children = set.getChildNodes();
             for (int j = 0; j < children.getLength(); j++) {
@@ -131,7 +131,7 @@ public class ParseXML {
                     for (int k = 1; k < neighborList.getLength(); k += 2) {
                         Node currNeighbor = neighborList.item(k);
                         String neighborName = currNeighbor.getAttributes().getNamedItem("name").getNodeValue();
-                        //System.out.println(neighborName);
+
                         neighbors.add(neighborName);
                     }
 
@@ -164,7 +164,7 @@ public class ParseXML {
                             shots.add(new Shot(shotNumber, shotCoordinates));
                         }
                     }
-                    //System.out.println(shots);
+
                 } else if ("parts".equals(currNode.getNodeName())) {
                     NodeList partsList = currNode.getChildNodes();
 
@@ -194,7 +194,6 @@ public class ParseXML {
                         roles.add(new Role(level, line, partName, "extra", roleCoordinates));
 
                     }
-                    //System.out.println(roles);
 
 
                 }
@@ -226,7 +225,7 @@ public class ParseXML {
 
 
 
-        Sets.add(new Set(null, "trailer", null, neighbors, new int[]{9 , 459, 208, 209}));
+        Sets.add(new Set(null, "trailer", null, neighbors, new int[]{991 , 248, 194, 201}));
 
         NodeList officeList = root.getElementsByTagName("office");
         Node office = officeList.item(0);
@@ -274,5 +273,5 @@ public class ParseXML {
         Sets.add(new CastingOffice(null, "office", null, neighbors2, upgrades, setCoordinates));
 
         return Sets;
-    }//class
+    }
 }

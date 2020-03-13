@@ -59,7 +59,7 @@ public class Set {
             }
         }
     }
-
+    //Creates a scene and adds its corresponding image to the mainImage
     public void addScene(Scene scene){
         imgMainView = new ImageView();
         currScene = scene;

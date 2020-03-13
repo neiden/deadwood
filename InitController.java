@@ -1,8 +1,7 @@
-import javafx.application.Application;
-import javafx.application.HostServices;
+
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,7 +9,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -19,17 +17,23 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class InitController{
 
 
-    /*public static void main(String[] args){
-        launch(args);
-    }*/
+    private static Button two;
+    private static Button three;
+    private static Button four;
+    private static Button five;
+    private static Button six;
+    private static Button seven;
+    private static Button eight;
+    private static int numPlayers;
     public static ArrayList<String> playerList = new ArrayList<>();
+    public static Stage stage;
 
+    //Helper method to open a given file with the users default pdf reader
     public static void openFile(File file) throws Exception {
         if (Desktop.isDesktopSupported()) {
             new Thread(() -> {
@@ -42,79 +46,98 @@ public class InitController{
         }
     }
 
-
+    //Creates the title screen with the options to start, quit, and view the rules.
+    //Runs until quit or the start process is finished.
+    //Main takes the list of players before this process finishes and uses it to start game with appropriate data.
     public static void run(){
             File file = new File("src/Deadwood-Free-Edition-Rules.pdf");
-            Stage stage = new Stage();
+            stage = new Stage();
+        Scene game = new Scene(new Group());
+        VBox startLayout = new VBox(50);
+        ImageView deadwood = new ImageView();
+        Image deadwood1 = new Image("/startscreen.png");
+        deadwood.setImage(deadwood1);
+        deadwood.setPreserveRatio(true);
+        deadwood.setFitHeight(1600);
+        deadwood.setFitWidth(1200);
 
-            Scene game = new Scene(new Group());
-            VBox startLayout = new VBox(50);
-            Label startMessage = new Label("Welcome to Deadwood");
+        Button start = new Button("Start");
+        Button quit = new Button("Quit");
+        Button rules = new Button("View Rules");
 
-            Button start = new Button("Start");
-            Button quit = new Button("Quit");
-            Button rules = new Button("View Rules");
+        start.setStyle("-fx-background-color: #e4cab0;");
+        start.setPrefWidth(200);
+        start.setPrefHeight(60);
 
-            startLayout.getChildren().addAll(startMessage, start, quit, rules);
-            Scene startScene = new Scene(startLayout, 300, 300);
+        quit.setStyle("-fx-background-color: #e4cab0;");
+        quit.setPrefWidth(200);
+        quit.setPrefHeight(60);
 
-            start.setOnAction(e -> {
-                initializeMenu();
-                stage.close();
-                                    });
-            quit.setOnAction(e -> stage.close());
-            rules.setOnAction(e -> {
-                try {
-                    openFile(file);
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());//ex.printStackTrace();
-                }
-            });
+        rules.setStyle("-fx-background-color: #e4cab0;");
+        rules.setPrefWidth(200);
+        rules.setPrefHeight(60);
 
+        startLayout.getChildren().addAll(deadwood,start, quit, rules);
+        startLayout.setAlignment(Pos.CENTER);
+        startLayout.setStyle("-fx-background-color: #b17246;");
+        Scene startScene = new Scene(startLayout, 300, 300);
 
-
-            stage.setScene(startScene);
-            stage.showAndWait();
-
-    }
-
-    private static int isValidPlayerNum(TextField textBox, String message, Label label){
-        int rtrnNum = 0;
-        try{
-            rtrnNum = Integer.parseInt(message);
-            if(rtrnNum < 2 || rtrnNum > 8){
-                rtrnNum = -1;
-                label.setText("Input must be between 2 - 8");
+        start.setOnAction(e -> {
+            initializeMenu();
+            stage.close();
+        });
+        quit.setOnAction(e -> stage.close());
+        rules.setOnAction(e -> {
+            try {
+                openFile(file);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
             }
+        });
 
-            return rtrnNum;
-
-        }catch(Exception e){
-            label.setText(message + " isnt a number");
-            return -1;
-        }
-
-
+        stage.setScene(startScene);
+        stage.setFullScreen(true);
+        stage.showAndWait();
     }
 
+    //Initializes menu for users to input number of players and their names
     private static void initializeMenu(){
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
-        window.setMinWidth(400);
-        window.setMinHeight(450);
+        window.setFullScreen(true);
+
 
         VBox playerNameLayout = new VBox(10);
         Scene playerNameScene = new Scene(playerNameLayout);
+        Stage nameStage = new Stage();
+        nameStage.setScene(playerNameScene);
+        nameStage.setFullScreen(true);
 
-        Label msg = new Label("Enter number of players (2 - 8)");
-        TextField numPlayersBox = new TextField();
-        Button submit = new Button("Submit");
+        Label msg = new Label("How many players?");
+        msg.setStyle("-fx-background-color: #e4cab0;");
+
+        two = new Button("2");
+        three = new Button("3");
+        four = new Button("4");
+        five = new Button("5");
+        six = new Button("6");
+        seven = new Button("7");
+        eight = new Button("8");
+
+        Button[] numButton = new Button[]{two, three, four, five, six, seven, eight};
+        for (int i = 0; i < numButton.length; i++){
+            numButton[i].setStyle("-fx-background-color: #e4cab0;");
+            numButton[i].setPrefWidth(200);
+            numButton[i].setPrefHeight(60);
+        }
         ArrayList<TextField> playerNames = new ArrayList<>();
 
         Label errorMsg = new Label();
 
-        AtomicInteger numPlayers = new AtomicInteger(0);
         Button currButton = new Button("Submit");
+        currButton.setPrefWidth(200);
+        currButton.setPrefHeight(60);
+        currButton.setStyle("-fx-background-color: #e4cab0;");
 
         currButton.setOnAction(e ->{
             for (int i = 0; i < playerNames.size(); i++) {
@@ -123,31 +146,31 @@ public class InitController{
             window.close();
         });
 
-        //creates valid number of players
-        submit.setOnAction(e -> {
-            numPlayers.set(isValidPlayerNum(numPlayersBox, numPlayersBox.getText(), errorMsg));
-            if(numPlayers.get() != -1){
-                for (int i = 0; i < numPlayers.get(); i++) {
+        Button[] generatePlayerNames = new Button[]{two, three, four, five, six, seven, eight};
+        for (int i = 0; i < generatePlayerNames.length; i++){
+            int finalI = i;
+            generatePlayerNames[i].setOnAction(e -> {
+                numPlayers = finalI + 2;
+                for (int j = 0; j < numPlayers; j++) {
                     TextField currText = new TextField();
                     playerNames.add(currText);
-                    playerNameLayout.getChildren().addAll(new Label("Enter player " + (i + 1) + "'s name"), currText);
+                    playerNameLayout.getChildren().addAll(new Label("Enter player " + (j + 1) + "'s name"), currText);
                 }
                 playerNameLayout.getChildren().add(currButton);
+                playerNameLayout.setStyle("-fx-background-color: #b17246;");
                 window.setScene(playerNameScene);
                 window.setMinHeight(playerNameLayout.getHeight() + 100);
                 window.setMinWidth(playerNameLayout.getWidth() + 200);
+                window.setFullScreen(true);
 
-            }
-        });
-
-
-
-
-
+            });
+        }
 
         VBox playerNumLayout = new VBox(10);
         playerNumLayout.setPadding(new Insets(20, 20, 20, 20));
-        playerNumLayout.getChildren().addAll(msg, numPlayersBox, submit, errorMsg);
+        playerNumLayout.getChildren().addAll(msg, two, three, four, five, six, seven, eight, errorMsg);
+        playerNumLayout.setStyle("-fx-background-color: #b17246;");
+        playerNumLayout.setAlignment(Pos.CENTER);
 
         Scene playerNumberScene = new Scene(playerNumLayout);
 
@@ -159,7 +182,6 @@ public class InitController{
 
 
 
-        //TODO: make the game start with user input generated
     }
 
 }

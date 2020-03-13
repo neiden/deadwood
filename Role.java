@@ -15,6 +15,10 @@ public class Role {
         actor = null;
     }
 
+    public int[] getCoordinates(){
+
+        return coordinates;
+    }
     public Player getActor(){
         return actor;
     }

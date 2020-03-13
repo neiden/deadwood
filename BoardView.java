@@ -1,18 +1,16 @@
-import javafx.application.Application;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class BoardView  {
@@ -23,23 +21,23 @@ public class BoardView  {
     private Button move;
     private Button upgrade;
     private Button endturn;
-    HBox moveOptions;
     ArrayList<Button> neighbors;
     ArrayList<Button> optionsList;
     ArrayList<Button> workList;
     ArrayList<Button> upgradeList;
-    HBox upgradeOptions;
-    HBox playerOptions;
-    HBox workOptions;
+    VBox upgradeOptions;
+    VBox playerOptions;
+    VBox workOptions;
+    VBox moveOptions;
     BorderPane mainLayout;
     ImageView boardImg;
 
-    VBox playerData;
+    HBox playerData;
     public Stage mainStage;
 
 
-
-    public BoardView(ArrayList<Player> playerList, ArrayList<Set> sets){
+    //constructor initializes all the necessary components
+    public BoardView(){
         work = new Button("Work");
         act = new Button("Act");
         rehearse = new Button("Rehearse");
@@ -50,21 +48,43 @@ public class BoardView  {
         optionsList = new ArrayList<>();
         workList = new ArrayList<>();
         upgradeList = new ArrayList<>();
-        workOptions = new HBox(5);
-        moveOptions = new HBox(5);
-        upgradeOptions = new HBox(5);
+        workOptions = new VBox(5);
+        moveOptions = new VBox(5);
+        upgradeOptions = new VBox(5);
 
+        work.setStyle("-fx-background-color: #e4cab0;");
+        work.setPrefWidth(200);
+        work.setPrefHeight(60);
 
-        createPlayers(playerList);
-        createSets(sets);
+        act.setStyle("-fx-background-color: #e4cab0;");
+        act.setPrefWidth(200);
+        act.setPrefHeight(60);
+
+        rehearse.setStyle("-fx-background-color: #e4cab0;");
+        rehearse.setPrefWidth(200);
+        rehearse.setPrefHeight(60);
+
+        move.setStyle("-fx-background-color: #e4cab0;");
+        move.setPrefWidth(200);
+        move.setPrefHeight(60);
+
+        upgrade.setStyle("-fx-background-color: #e4cab0;");
+        upgrade.setPrefWidth(200);
+        upgrade.setPrefHeight(60);
+
+        endturn.setStyle("-fx-background-color: #e4cab0;");
+        endturn.setPrefWidth(200);
+        endturn.setPrefHeight(60);
 
         mainStage = new Stage();
         mainLayout = new BorderPane();
 
+
         //create HBox container with all player actions contained within, set to bottom of the mainLayout
-        playerOptions = new HBox(5);
+        playerOptions = new VBox(5);
         playerOptions.getChildren().addAll(work, act, rehearse, move, upgrade, endturn);
-        mainLayout.setBottom(playerOptions);
+        playerOptions.setSpacing(20);
+        mainLayout.setRight(playerOptions);
 
         //create board, set to center of mainLayout
         boardImg = new ImageView();
@@ -74,6 +94,7 @@ public class BoardView  {
         boardImg.setFitHeight(1600);
         boardImg.setFitWidth(1200);
         mainLayout.getChildren().add(boardImg);
+        mainLayout.setStyle("-fx-background-color: #b17246;");
 
 
         Scene scene = new Scene(mainLayout);
@@ -84,7 +105,8 @@ public class BoardView  {
         
     }
 
-
+    //Allows the Controller class to define the behavior of each button;
+    //waits for an event to occur
     public void addPlayerOptionListener(EventHandler<ActionEvent> listenForOptionButton){
         work.setOnAction(listenForOptionButton);
         act.setOnAction(listenForOptionButton);
@@ -92,9 +114,10 @@ public class BoardView  {
         upgrade.setOnAction(listenForOptionButton);
         move.setOnAction(listenForOptionButton);
         endturn.setOnAction(listenForOptionButton);
-
     }
 
+    //Creates the player data boxes at the bottom of the screen.
+    //This method is called on each update to accurately reflect state of game.
     public void initPlayerData(ArrayList<Player> playerList){
         playerData.getChildren().clear();
         for (int i = 0; i < playerList.size(); i++) {
@@ -115,15 +138,18 @@ public class BoardView  {
             Label location = new Label("Location: " + currPlayer.currSet.name + "");
             box.getChildren().addAll(name, rank, dollars, credits, chips, role, location);
             box.setMaxHeight(.5);
+            box.setAlignment(Pos.BOTTOM_CENTER);
+            box.setStyle("-fx-background-color: #e4cab0;");
+            if(playerList.get(i).getTurn()){
+                String hexCode = playerList.get(i).getHexCode();
+                box.setStyle("-fx-background-color: #" + hexCode + ";");
+            }
             playerData.getChildren().add(box);
         }
     }
 
-
-    public void createPlayers(ArrayList<Player> playerList){
-
-    }
-
+    //Sets the player option buttons to be correspondingly grey or available.
+    //Compares the valid options from the Player class to determine this.
     public void validateOptions(ArrayList<String> validOptions){
         for (Node node : playerOptions.getChildren()){
             optionsList.add((Button)node);
@@ -139,17 +165,16 @@ public class BoardView  {
         }
     }
 
-    public void createSets(ArrayList<Set> sets){
-
-    }
-
+    //Initializes the board with correct graphical components.
+    //Very similar to update, but doesn't need to clear anything and creates the player options and playerIcon first.
     public void init(Player currPlayer, ArrayList<Set> sets, ArrayList<Player> playerList){
         currPlayer.createOptionList();
+        currPlayer.updatePlayerIcon();
         validateOptions(currPlayer.getOptions());
 
-        playerData = new VBox(5);
+        playerData = new HBox(5);
         initPlayerData(playerList);
-        mainLayout.setRight(playerData);
+        mainLayout.setBottom(playerData);
 
         for (int i = 0; i < sets.size(); i++) {
             if(sets.get(i).getImageView() != null){
@@ -161,19 +186,29 @@ public class BoardView  {
                 }
             }
         }
-        //mainStage.setFullScreen(true);
+        for (int i = 0; i < playerList.size(); i++) {
+            if(playerList.get(i).getImageView() != null){
+                mainLayout.getChildren().add(playerList.get(i).getImageView());
+            }
+        }
     }
 
+    //Creates a set of move buttons displaying the neighbors of the current set
     public void createMoveOptions(Set currSet){
         for (int i = 0; i < currSet.getNeighbors().size() ; i++) {
-            neighbors.add(new Button(currSet.getNeighbors().get(i)));
+            Button currButton = new Button();
+            currButton.setText(currSet.getNeighbors().get(i));
+            currButton.setStyle("-fx-background-color: #e4cab0;");
+            currButton.setPrefWidth(200);
+            currButton.setPrefHeight(60);
+
+            neighbors.add(currButton);
             moveOptions.getChildren().add(neighbors.get(i));
         }
-        //playerOptions.setVisible(false);
-        mainLayout.setBottom(moveOptions);
-        System.out.println(currSet.getNeighbors());
+        mainLayout.setRight(moveOptions);
+        moveOptions.setSpacing(20);
     }
-
+    //Creates set of buttons representing the available roles a player can take
     public void createWorkOptions(Player currPlayer){
         ArrayList<Role> availableRoles = currPlayer.getAvailableRoles();
         for (int i = 0; i < availableRoles.size(); i++) {
@@ -182,14 +217,18 @@ public class BoardView  {
 
             Button currRole = new Button();
             currRole.setText(name + ", " + rank );
+
+            currRole.setStyle("-fx-background-color: #e4cab0;");
+            currRole.setPrefWidth(200);
+            currRole.setPrefHeight(60);
+
             workList.add(currRole);
             workOptions.getChildren().add(currRole);
         }
-        //playerOptions.setVisible(false);
-        mainLayout.setBottom(workOptions);
-        System.out.println(workList);
+        workOptions.setSpacing(20);
+        mainLayout.setRight(workOptions);
     }
-
+    //Creates set of available upgrade options that the user can take
     public void createUpgradeOptions(Player currPlayer){
         ArrayList<Upgrade> availableUpgrades = currPlayer.getAvailableUpgrades();
         for (int i = 0; i < availableUpgrades.size(); i++) {
@@ -198,23 +237,27 @@ public class BoardView  {
             String credits = "Credit Cost: " + availableUpgrades.get(i).credits + "";
 
             Button currUpgrade = new Button();
+
+            currUpgrade.setStyle("-fx-background-color: #e4cab0;");
+            currUpgrade.setPrefWidth(200);
+            currUpgrade.setPrefHeight(60);
             currUpgrade.setText(rank + dollars + credits);
             upgradeList.add(currUpgrade);
             upgradeOptions.getChildren().add(currUpgrade);
         }
-
-        mainLayout.setBottom(upgradeOptions);
-        System.out.println(upgradeList);
+        upgradeOptions.setSpacing(20);
+        mainLayout.setRight(upgradeOptions);
 
     }
 
+    //Sets every upgrade button to have a behavior defined in the Controller class
     public void addUpgradeOptionListener(EventHandler<ActionEvent> listenForUpgradeButton){
-        for (int i = 0; i < workList.size(); i++) {
+        for (int i = 0; i < upgradeList.size(); i++) {
             upgradeList.get(i).setOnAction(listenForUpgradeButton);
         }
     }
 
-
+    // " " " "
     public void addWorkOptionListener(EventHandler<ActionEvent> listenForWorkButton){
         for (int i = 0; i < workList.size(); i++) {
             workList.get(i).setOnAction(listenForWorkButton);
@@ -222,7 +265,7 @@ public class BoardView  {
     }
 
 
-
+    // " " " "
     public void addMoveOptionListener(EventHandler<ActionEvent> listenForMoveButton){
         for (int i = 0; i < neighbors.size(); i++) {
             neighbors.get(i).setOnAction(listenForMoveButton);
@@ -230,7 +273,7 @@ public class BoardView  {
     }
 
 
-
+    //Sets the stage as showing or not
     public void setVisible(boolean visible){
         if(visible){
             mainStage.show();
@@ -240,6 +283,7 @@ public class BoardView  {
         }
     }
 
+    //The main graphical method that wipes the screen clear and then repopulates it with correct components
     public void update(ArrayList<Player> playerList, ArrayList<Set> sets){
         mainLayout.getChildren().clear();
         mainLayout.getChildren().add(boardImg);
@@ -252,11 +296,17 @@ public class BoardView  {
                     mainLayout.getChildren().add(sets.get(i).getShotsView().get(j));
                 }
             }
-        //TODO: implement displaying players location
     }
-        playerData = new VBox(5);
+        for (int i = 0; i < playerList.size(); i++) {
+            playerList.get(i).updatePlayerIcon();
+            if(playerList.get(i).getImageView() != null){
+                mainLayout.getChildren().add(playerList.get(i).getImageView());
+            }
+        }
+
+        playerData = new HBox(5);
         initPlayerData(playerList);
-        mainLayout.setRight(playerData);
+        mainLayout.setBottom(playerData);
 
 
 
@@ -264,13 +314,31 @@ public class BoardView  {
         upgradeOptions.getChildren().clear();
         moveOptions.getChildren().clear();
         workOptions.getChildren().clear();
-        mainLayout.setBottom(playerOptions);
+        mainLayout.setRight(playerOptions);
 
 
         upgradeList.clear();
         optionsList.clear();
         workList.clear();
         neighbors.clear();
+    }
+    //Creates end screen displaying the players standings and scores
+    public void setEndScreen(ArrayList<Player> players){
+        BorderPane endLayout = new BorderPane();
+        endLayout.setStyle("-fx-background-color: #e4cab0;");
+        VBox endBox = new VBox(5);
+        for (int i = 0; i < players.size(); i++) {
+            Label score = new Label((i+1) + "st: " + players.get(i).name + " with " + players.get(i).points);
+            endBox.getChildren().add(score);
+        }
+
+        endBox.setStyle("-fx-background-color: #e4cab0;");
+        endLayout.setCenter(endBox);
+        Scene endScene = new Scene(endLayout);
+        mainStage.setTitle("Game Over");
+        mainStage.setScene(endScene);
+        mainStage.setFullScreen(true);
+        mainStage.show();
     }
 
 
